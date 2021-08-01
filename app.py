@@ -23,12 +23,14 @@ navbar = dbc.NavbarSimple(
     brand='SoftYeetus',
     brand_href='/', 
     children=[
-        dbc.NavItem(dcc.Link('Play', href='/play', className='nav-link')),
+        dbc.NavItem(dcc.Link('Home', href='/index', className='nav-link')),
+        dbc.NavItem(dcc.Link('Create a Character', href='/character_creator', className='nav-link')),
+        dbc.NavItem(dcc.Link('Play', href='/play', className='nav-link'))
     ],
     sticky='top',
     color='#1DB954',
-    light=True, 
-    dark=False
+    light=False,
+    dark=True
 )
 
 # Layout
@@ -57,15 +59,11 @@ def display_page(pathname):
 
 # Initialize server and database
 server = app.server
-server.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///spotify.sqlite3"
+server.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///webrpg.sqlite3"
 server.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(server)
 db.init_app(server)
 db.create_all()
-
-
-
-
 
 if __name__ == '__main__':
     app.run_server(debug=True)

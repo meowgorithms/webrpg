@@ -19,6 +19,8 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets, meta_tags=m
 
 # Components
 # ----------
+
+# Nav / header
 navbar = dbc.NavbarSimple(
     brand='SoftYeetus',
     brand_href='/', 
@@ -31,6 +33,15 @@ navbar = dbc.NavbarSimple(
     color='#1DB954',
     light=False,
     dark=True
+)
+
+# Foot
+footer = dbc.Container(
+    dbc.Row(
+        dbc.Col(
+            html.P()
+        )
+    )
 )
 
 # Layout

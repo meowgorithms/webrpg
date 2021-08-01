@@ -1,6 +1,7 @@
 """
 Provides character archetypes (aka classes)
 """
+import gear
 
 
 class Archetype:
@@ -9,8 +10,9 @@ class Archetype:
     """
 
     # TODO
-    def __init__(self):
-        pass
+    def __init__(self, name):
+        self.name = name
+        self.abilities = set()
 
 
 class Quantum(Archetype):
@@ -22,6 +24,9 @@ class Quantum(Archetype):
     def __init__(self):
         super(self)
 
+
+# These are not MVP
+# Does this imply the existence of a normal dragon archetype?
 class ArchDragon(Archetype):
     """
     Archetype themed around dragons
@@ -31,9 +36,10 @@ class ArchDragon(Archetype):
     def __init__(self):
         super(self)
 
+
 class Valence(Archetype):
     """
-    Archetype themed around peace or some shit
+    Archetype themed around peace or balance or some shit
     """
 
     # TODO

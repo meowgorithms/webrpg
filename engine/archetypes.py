@@ -2,7 +2,7 @@
 Provides character archetypes (aka classes)
 """
 import gear
-
+from app import db
 
 class Archetype:
     """
@@ -13,6 +13,11 @@ class Archetype:
     def __init__(self, name):
         self.name = name
         self.abilities = set()
+        self.gear = gear.GearSet
+
+        # Stats
+
+        self.health = db.e
 
 
 class Quantum(Archetype):
@@ -45,3 +50,12 @@ class Valence(Archetype):
     # TODO
     def __init__(self):
         super(self)
+
+
+
+# THE BANGBROS -> FAILURE SAMURAI BROTHERS
+class BangBrosuo(Archetype):
+    pass
+
+class BangBrone(Archetype):
+    pass

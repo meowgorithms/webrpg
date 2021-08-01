@@ -9,6 +9,7 @@ dash = "*"
 gunicorn = "*"
 dash-bootstrap-components = "*"
 flask-sqlalchemy = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

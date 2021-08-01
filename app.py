@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from dash.dependencies import Input, Output
 from pages import play, index, character_creator
 
+
 external_stylesheets = [
     dbc.themes.CYBORG, # Bootswatch theme
     'https://use.fontawesome.com/releases/v5.9.0/css/all.css', # for social media icons
@@ -70,7 +71,7 @@ def display_page(pathname):
 
 # Initialize server and database
 server = app.server
-server.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///webrpg.sqlite3"
+server.config["SQLALCHEMY_DATABASE_URI"] = 
 server.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(server)
 db.init_app(server)

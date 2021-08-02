@@ -10,6 +10,8 @@ gunicorn = "*"
 dash-bootstrap-components = "*"
 flask-sqlalchemy = "*"
 python-dotenv = "*"
+ipykernel = "*"
+psycopg2 = "*"
 
 [dev-packages]
 

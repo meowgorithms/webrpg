@@ -7,7 +7,7 @@ column1 = dbc.Col(
     [
         dcc.Markdown(
             """
-            ## Choose your character
+            ### Choose your character
             """
         ),
         dcc.Dropdown(id = 'character_select',

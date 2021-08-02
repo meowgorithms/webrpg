@@ -18,5 +18,5 @@ class ArcaneSet(GearSet):
     Base class for arcane gearsets
     """
     def __init__(self):
-        super().__init__(self, "Arcane Set")
-        self.robe
+        super().__init__("Arcane Set")
+        self.arcane_focus

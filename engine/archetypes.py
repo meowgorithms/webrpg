@@ -1,9 +1,10 @@
 """
 Provides character archetypes (aka classes)
 """
-import gear
-import abilities
-import queries
+from .gear import GearSet
+from .queries import get_base_stats
+from .abilities import Ability, Tunnel
+
 
 class Archetype:
     """
@@ -15,12 +16,12 @@ class Archetype:
         # Define attributes
         self.name = name
         self.archetype_name = archetype_name
-        self.abilities = set()
-        self.gear = gear.GearSet
+        self.abilities = {}
+        self.gear = GearSet
         self.level = 1
 
         # Define base stats
-        base_stats = queries.get_base_stats(self.archetype_name)
+        base_stats = get_base_stats(self.archetype_name)
         self.base_health = base_stats[1]
         self.base_physical_attack = base_stats[2]
         self.base_physical_defense = base_stats[3]
@@ -41,12 +42,10 @@ class Archetype:
         self.current_magic_attack = base_stats[4]
         self.current_magic_defense = base_stats[5]
 
-
     def take_damage(self, damage: int):
-        self.current_health -= damage
+        self.current_health -= round(damage)
         if self.current_health < 0:
             self.current_health = 0
-
 
     def __repr__(self):
         return f"""Name: {self.name},
@@ -70,6 +69,9 @@ class Archetype:
              Current Magic Defense: {self.current_magic_defense},
             """
 
+    def add_ability(self, ability: Ability):
+        self.abilities[ability.name] = ability
+
 
 class Quantum(Archetype):
     """
@@ -79,9 +81,7 @@ class Quantum(Archetype):
     # TODO
     def __init__(self, name: str):
         super().__init__(name, "Quantum")
-
-        # Currently temporary, could be permanent
-        self.abilities.add({"Tunnel": abilities.Tunnel(self)}) 
+        self.add_ability(Tunnel(self))
         
 
 # These are not MVP

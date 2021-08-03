@@ -6,8 +6,6 @@ from abc import abstractmethod
 from enum import Enum, auto
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    import archetypes
 # Should this be coded into the archetypes?
 
 class DamageType(Enum):
@@ -30,11 +28,13 @@ class Ability:
     
 
 
-    def __init__(self, name):
+    def __init__(self, name, user):
         self.name = name
         self.level = 1
         self.magic_penetration = 0
         self.physical_penetration = 0
+        self.user = user
+        self.archetype_bonus = False
     
     @abstractmethod
     def use_ability(self):
@@ -51,17 +51,26 @@ class Tunnel(Ability):
     # Here or in Archetype classes
     # TODO: Add hard coded values to database, query here for them instead -
     # allows for easy balance changes
-    def __init__(self, archetype: archetypes.Archetype):
-        super().__init__("Tunnel")
+    def __init__(self, user):
+        super().__init__("Tunnel", user)
         self.max_level = 10 # arbitrary max level
         self.damage_type = DamageType.MAGIC
         self.base_attack = 5
         # ability level and archetype determine amount of penetration
         self.magic_penetration = self.level * 2
 
-    def use_ability(self, archetype: archetypes.Archetype, target: archetypes.Archetype):
+        # Check user archetype and set bonus flag
+        if user.name == "Quantum":
+            self.archetype_bonus = True
+
+
+    def use_ability(self, target):
+        # Check archetype bonus flag
+        if self.archetype_bonus:
+            self.magic_penetration *= 2
+
         # calculate scaled ability damage
-        damage = (self.base_attack + archetype.base_magic_attack) * archetype.level * self.level
+        damage = (self.base_attack + self.user.base_magic_attack) * self.user.level * self.level
         # calculate damage received
         damage = damage * (damage / (damage + target.magic_defense))
         target.take_damage(damage)

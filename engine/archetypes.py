@@ -1,9 +1,9 @@
 """
 Provides character archetypes (aka classes)
 """
-from engine.gear import GearSet
-from engine.queries import get_base_stats
-from engine.abilities import DamageType, Tunnel
+import gear
+import abilities
+import queries
 
 class Archetype:
     """
@@ -16,11 +16,11 @@ class Archetype:
         self.name = name
         self.archetype_name = archetype_name
         self.abilities = set()
-        self.gear = GearSet
+        self.gear = gear.GearSet
         self.level = 1
 
         # Define base stats
-        base_stats = get_base_stats(self.archetype_name)
+        base_stats = queries.get_base_stats(self.archetype_name)
         self.base_health = base_stats[1]
         self.base_physical_attack = base_stats[2]
         self.base_physical_defense = base_stats[3]
@@ -81,9 +81,7 @@ class Quantum(Archetype):
         super().__init__(name, "Quantum")
 
         # Currently temporary, could be permanent
-        self.abilities.add({"Tunnel": Tunnel(self)})
-
-        
+        self.abilities.add({"Tunnel": abilities.Tunnel(self)}) 
         
 
 # These are not MVP

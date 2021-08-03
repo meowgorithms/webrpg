@@ -2,8 +2,6 @@
 Provides archetypes and engine with gear classes and functions
 """
 
-from os import name
-
 
 class GearSet:
     """
@@ -17,6 +15,18 @@ class ArcaneSet(GearSet):
     """
     Base class for arcane gearsets
     """
+    def __init__(self, name):
+        super().__init__(name)
+        self.arcane_focus = None
+        self.hood = None
+        self.robe = None
+        self.gloves = None
+
+class QuantumGearSet(ArcaneSet):
+    """
+    Gear set specifically for Quantum
+    """
+
     def __init__(self):
-        super().__init__("Arcane Set")
-        self.arcane_focus
+        super().__init__("Quantum Set")
+        

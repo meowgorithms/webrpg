@@ -3,8 +3,11 @@ Provides ability class definitions, damage types, and other related helper
 classes and functions
 """
 from abc import abstractmethod
-from engine.archetypes import Archetype, Quantum
 from enum import Enum, auto
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import archetypes
 # Should this be coded into the archetypes?
 
 class DamageType(Enum):
@@ -48,20 +51,20 @@ class Tunnel(Ability):
     # Here or in Archetype classes
     # TODO: Add hard coded values to database, query here for them instead -
     # allows for easy balance changes
-    def __init__(self, archetype: Archetype):
+    def __init__(self, archetype: archetypes.Archetype):
         super().__init__("Tunnel")
         self.max_level = 10 # arbitrary max level
         self.damage_type = DamageType.MAGIC
         self.base_attack = 5
         # ability level and archetype determine amount of penetration
         self.magic_penetration = self.level * 2
-        if archetype is Quantum:
-            self.magic_penetration *= 2
 
-    def use_ability(self, archetype: Archetype, target: Archetype):
+    def use_ability(self, archetype: archetypes.Archetype, target: archetypes.Archetype):
         # calculate scaled ability damage
         damage = (self.base_attack + archetype.base_magic_attack) * archetype.level * self.level
         # calculate damage received
         damage = damage * (damage / (damage + target.magic_defense))
         target.take_damage(damage)
-        
+
+
+

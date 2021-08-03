@@ -22,6 +22,13 @@ class ArcaneSet(GearSet):
         self.robe = None
         self.gloves = None
 
+    def __repr__(self) -> str:
+        return f"""
+        Hood: {self.hood}
+        Robe: {self.robe}
+        Gloves: {self.gloves}
+        Arcane Focus: {self.arcane_focus}
+        """
 class QuantumGearSet(ArcaneSet):
     """
     Gear set specifically for Quantum
@@ -29,3 +36,6 @@ class QuantumGearSet(ArcaneSet):
 
     def __init__(self):
         super().__init__("Quantum Set")
+
+    def __repr__(self) -> str:
+        return super().__repr__()

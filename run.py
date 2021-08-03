@@ -1,14 +1,11 @@
-import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
-import os
-from flask_sqlalchemy import SQLAlchemy
 from dash.dependencies import Input, Output
 from pages import play, index, character_creator
 from dotenv import load_dotenv
 
-from app import APP, db
+from app import APP
 
 navbar = dbc.NavbarSimple(
     brand='SoftYeetus',

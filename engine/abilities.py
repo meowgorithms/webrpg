@@ -4,9 +4,8 @@ classes and functions
 """
 from abc import abstractmethod
 from enum import Enum, auto
-from typing import TYPE_CHECKING
-
-# Should this be coded into the archetypes?
+from random import uniform, choice
+# Should this be coded into the archetypes? - leaning toward no (date: 8/3)
 
 class DamageType(Enum):
     """
@@ -18,27 +17,37 @@ class DamageType(Enum):
     PHYSICAL = auto()
     MAGIC = auto()
 
-
 # This will future proof my lack of executive function
 # IF I choose to let archetypes share abilities, this will allow for that freedom
 class Ability:
     """
     Base class for all abilities
     """
-    
-
 
     def __init__(self, name, user):
         self.name = name
         self.level = 1
+        # ------ Currently weird
         self.magic_penetration = 0
         self.physical_penetration = 0
+        # ------
         self.user = user
         self.archetype_bonus = False
-    
+        self.max_level = 10
+
     @abstractmethod
     def use_ability(self):
         pass
+    
+    @abstractmethod
+    def __call__(self):
+        return self.use_ability
+
+    def __repr__(self):
+        return f"""
+        {self.name}: Level {self.level}
+        """
+
 
 # Quantum
 # -------
@@ -47,17 +56,16 @@ class Tunnel(Ability):
     An ability primarily belonging to the Quantum Archetype
     Penetrates enemy's magic defense, dealing extra damage
     """
-    # TODO: Choose where the damage is decided:
-    # Here or in Archetype classes
     # TODO: Add hard coded values to database, query here for them instead -
     # allows for easy balance changes
     def __init__(self, user):
         super().__init__("Tunnel", user)
-        self.max_level = 10 # arbitrary max level
+
+        # TODO Query for stats from database
         self.damage_type = DamageType.MAGIC
-        self.base_attack = 5
+        self.base_attack = 15
         # ability level and archetype determine amount of penetration
-        self.magic_penetration = self.level * 2
+        self.magic_penetration = 10 + self.level * 2
 
         # Check user archetype and set bonus flag
         if user.name == "Quantum":
@@ -70,10 +78,78 @@ class Tunnel(Ability):
             self.magic_penetration *= 2
 
         # calculate scaled ability damage
-        damage = (self.base_attack + self.user.base_magic_attack) * self.user.level * self.level
+        damage = (self.base_attack + self.user.base_magic_attack) \
+            * (self.user.level + self.level)
         # calculate damage received
         damage = damage * (damage / (damage + target.magic_defense))
         target.take_damage(damage)
 
 
+class Collapse(Ability):
+    """
+    Deals a random amount of damage with a random damage type
+    """
 
+    def __init__(self, user):
+        super().__init__("Collapse", user)
+        # TODO Query DB for stats
+
+        self.base_attack = 10
+        self.damage_bonus = self.user.base_magic_attack * 1.75
+        # Check user archetype and set bonus flag
+        if user.name == "Quantum":
+            self.archetype_bonus = True
+
+        # Used to define the bounds for the random damage modifier
+        self.base_random_lower = 10 - self.level
+        self.base_random_upper = self.user.base_magic_attack * \
+            self.level * self.user.level
+
+    def use_ability(self, target):
+        self.damage_type = choice([damage_type for damage_type in DamageType])
+        # calculate normal damage amount
+        damage = (self.base_attack + self.user.base_magic_attack) \
+            * (self.user.level + self.level)
+        # Apply damage bonus
+        if self.archetype_bonus:
+            damage += self.damage_bonus
+
+        # Do the random damage thing
+        damage += uniform(self.base_random_lower, self.base_random_upper)
+
+        # Calculate received damage
+        if self.damage_type == DamageType.MAGIC:
+            damage = damage * (damage / (damage + target.magic_defense))
+        elif self.damage_type == DamageType.PHYSICAL:
+            damage = damage * (damage / (damage + target.physical_defense))
+        target.take_damage(damage)
+
+
+class Disintegrate(Ability):
+    """
+    Quantum Ability
+    Primes the next attack for double damage
+    """
+    def __init__(self, user):
+        super().__init__("Disintegrate", user)
+        self.damage_type = DamageType.MAGIC
+        self.base_attack = 10
+        # Check user archetype and set bonus flag
+        if user.name == "Quantum":
+            self.archetype_bonus = True
+        self.damage_multiplier = 2
+        self.used = False
+
+    def use_ability(self, target):
+        damage = (self.base_attack + self.user.magic_attack) \
+            * (self.user.level + self.level)
+        
+        # Check archetype bonus
+        if self.archetype_bonus:
+            self.damage_multiplier += 0.5
+        # Apply multiplier after flag check
+        if self.used:
+            damage *= self.damage_multiplier
+        # Calculate received damage
+        damage = damage * (damage / (damage + target.magic_defense))
+        target.take_damage(damage)

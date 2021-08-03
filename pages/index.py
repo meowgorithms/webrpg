@@ -7,14 +7,6 @@ from engine.archetypes import Quantum
 
 def test_creation():
     character = Quantum("Fred")
-    character2 = Quantum("Fred")
-    character2.magic_defense = 10
-
-    print(f"Fred1 has {character.current_health} health, and {character.magic_defense} magic defense")
-    print(f"Fred2 has {character2.current_health} health, and {character2.magic_defense} magic defense")
-    character.abilities["Tunnel"].use_ability(character2)
-    print(f"Fred1 has {character.current_health} health, and {character.magic_defense} magic defense")
-    print(f"Fred2 has {character2.current_health} health, and {character2.magic_defense} magic defense")
     return str(character)
 
 

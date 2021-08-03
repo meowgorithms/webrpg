@@ -82,7 +82,12 @@ class Tunnel(Ability):
             * (self.user.level + self.level)
         # calculate damage received
         damage = damage * (damage / (damage + target.magic_defense))
+        damage = round(damage)
         target.take_damage(damage)
+        print(f"{self.user.name} dealt {damage} damage to {target.name}!")
+    
+    def __call__(self, target):
+        return self.use_ability(target)
 
 
 class Collapse(Ability):
@@ -103,7 +108,7 @@ class Collapse(Ability):
         # Used to define the bounds for the random damage modifier
         self.base_random_lower = 10 - self.level
         self.base_random_upper = self.user.base_magic_attack * \
-            self.level * self.user.level
+            (self.level + self.user.level)
 
     def use_ability(self, target):
         self.damage_type = choice([damage_type for damage_type in DamageType])
@@ -122,14 +127,19 @@ class Collapse(Ability):
             damage = damage * (damage / (damage + target.magic_defense))
         elif self.damage_type == DamageType.PHYSICAL:
             damage = damage * (damage / (damage + target.physical_defense))
+        damage = round(damage)
         target.take_damage(damage)
+        print(f"{self.user.name} dealt {damage} damage to {target.name}!")
 
+    def __call__(self, target):
+        return self.use_ability(target)
 
 class Disintegrate(Ability):
     """
     Quantum Ability
     Primes the next attack for double damage
     """
+    # TODO FIX USED FLAG SHIT
     def __init__(self, user):
         super().__init__("Disintegrate", user)
         self.damage_type = DamageType.MAGIC
@@ -143,7 +153,6 @@ class Disintegrate(Ability):
     def use_ability(self, target):
         damage = (self.base_attack + self.user.magic_attack) \
             * (self.user.level + self.level)
-        
         # Check archetype bonus
         if self.archetype_bonus:
             self.damage_multiplier += 0.5
@@ -152,4 +161,11 @@ class Disintegrate(Ability):
             damage *= self.damage_multiplier
         # Calculate received damage
         damage = damage * (damage / (damage + target.magic_defense))
+        damage = round(damage)
         target.take_damage(damage)
+        print(f"{self.user.name} dealt {damage} damage to {target.name}!")
+        # invert flag
+        self.used = ~self.used
+
+    def __call__(self, target):
+        return self.use_ability(target)

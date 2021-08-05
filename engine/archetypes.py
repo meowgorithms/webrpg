@@ -3,60 +3,47 @@ Provides character archetypes (aka classes)
 """
 from .gear import ArcaneSet, GearSet, QuantumGearSet
 from .queries import get_base_stats
-from .abilities import Ability, Collapse, Disintegrate, Tunnel
+from .abilities import Ability, Collapse, Disintegrate, Tunnel, Abilities
+from dataclasses import dataclass, field
 
 
-class Archetype:
+@dataclass(init=True)
+class ArchetypeData:
     """
-    Base class for all archetypes
+    Data container for archetypes
     """
+    archetype_name: str = field(init=True)
+    name: str = field(init=True)
+    abilities: Abilities = Abilities()
 
-    # TODO
-    def __init__(self, name: str, archetype_name: str):
-        # Define attributes
-        self.name = name
-        self.archetype_name = archetype_name
-        self.abilities = {}
-        self.gear = None
-        self.level = 1
+    base_health: int = 0
+    base_physical_attack: int = 0
+    base_physical_defense: int = 0
+    base_magic_attack: int = 0
+    base_magic_defense: int = 0
 
-        # Define base stats
-        base_stats = get_base_stats(self.archetype_name)
-        self.base_health = base_stats[1]
-        self.base_physical_attack = base_stats[2]
-        self.base_physical_defense = base_stats[3]
-        self.base_magic_attack = base_stats[4]
-        self.base_magic_defense = base_stats[5]
+    # Initialize stats from base stats
+    max_health: int = 0
+    physical_attack: int = 0
+    physical_defense: int = 0
+    magic_attack: int = 0
+    magic_defense: int = 0
 
-        # Initialize stats from base stats
-        self.max_health = base_stats[1]
-        self.physical_attack = base_stats[2]
-        self.physical_defense = base_stats[3]
-        self.magic_attack = base_stats[4]
-        self.magic_defense = base_stats[5]
+    # An extra bit to track current stats vs max / normal
+    current_health: int = 0
+    current_physical_attack: int = 0
+    current_physical_defense: int = 0
+    current_magic_attack: int = 0
+    current_magic_defense: int = 0
 
-        # An extra bit to track current stats vs max / normal
-        self.current_health = base_stats[1]
-        self.current_physical_attack = base_stats[2]
-        self.current_physical_defense = base_stats[3]
-        self.current_magic_attack = base_stats[4]
-        self.current_magic_defense = base_stats[5]
-
-    def take_damage(self, damage):
-        self.current_health -= round(damage)
-        if self.current_health < 0:
-            self.current_health = 0
-
-    def recover_health(self, amount):
-        self.current_health += round(amount)
-        if self.current_health >= self.max_health:
-            self.current_health = self.max_health
+    gear: GearSet = None # TODO Build GearSet.Empty
+    level = 1
 
     def __repr__(self):
         return f"""
         {self.name}: Level {self.level}
-        {self.gear}
         Archetype: {self.archetype_name}
+        {self.gear}
         Abilities: {self.abilities}
         Base Health: {self.base_health}
         Base Physical Attack: {self.base_physical_attack}
@@ -75,8 +62,50 @@ class Archetype:
         Current Magic Defense: {self.current_magic_defense}
         """
 
+
+class Archetype:
+    """
+    Base class for all archetypes
+    """
+    def __init__(self, name: str, archetype_name: str):
+        self.data = ArchetypeData(archetype_name,
+                                  name)
+        # Is there a better way to do this?
+        base_stats = get_base_stats(archetype_name)
+
+        self.data.base_health = base_stats[1]
+        self.data.base_physical_attack = base_stats[2]
+        self.data.base_physical_defense = base_stats[3]
+        self.data.base_magic_attack = base_stats[4]
+        self.data.base_magic_defense = base_stats[5]
+        # Initialize stats from base stats
+        self.data.max_health = base_stats[1]
+        self.data.physical_attack = base_stats[2]
+        self.data.physical_defense = base_stats[3]
+        self.data.magic_attack = base_stats[4]
+        self.data.magic_defense = base_stats[5]
+        # An extra bit to track current stats vs max / normal
+        self.data.current_health = base_stats[1]
+        self.data.current_physical_attack = base_stats[2]
+        self.data.current_physical_defense = base_stats[3]
+        self.data.current_magic_attack = base_stats[4]
+        self.data.current_magic_defense = base_stats[5]
+
+    def take_damage(self, damage):
+        self.data.current_health -= round(damage)
+        if self.data.current_health < 0:
+            self.data.current_health = 0
+
+    def recover_health(self, amount):
+        self.data.current_health += round(amount)
+        if self.data.current_health >= self.data.max_health:
+            self.data.current_health = self.data.max_health
+
+    def __repr__(self):
+        return str(self.data)
+
     def add_ability(self, ability: Ability):
-        self.abilities[ability.name] = ability
+        return self.data.abilities.add_ability(ability)
 
 
 class Quantum(Archetype):
@@ -87,8 +116,7 @@ class Quantum(Archetype):
     # TODO
     def __init__(self, name: str):
         super().__init__(name, "Quantum")
-        self.gear = QuantumGearSet()
-
+        self.data.gear = QuantumGearSet()
         self.add_ability(Tunnel(self))
         self.add_ability(Collapse(self))
         self.add_ability(Disintegrate(self))
@@ -119,6 +147,7 @@ class Valence(Archetype):
 # THE BANGBROS -> FAILURE SAMURAI BROTHERS
 class BangBrosuo(Archetype):
     pass
+
 
 class BangBrone(Archetype):
     pass

@@ -111,6 +111,7 @@ class Collapse(Ability):
 
     def use_ability(self, target):
         self.damage_type = choice([damage_type for damage_type in DamageType])
+        print(self.damage_type)
         # calculate normal damage amount
         damage = (self.base_attack + self.user.data.magic_attack) * self.level
         # Apply damage bonus

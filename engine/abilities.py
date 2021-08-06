@@ -6,6 +6,7 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from enum import Enum, auto
 from random import uniform, choice
+from .name_provider import SPELL_FORMATS, create_spell_name
 
 
 class DamageType(Enum):

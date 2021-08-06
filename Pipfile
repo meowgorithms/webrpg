@@ -12,6 +12,7 @@ flask-sqlalchemy = "*"
 python-dotenv = "*"
 ipykernel = "*"
 psycopg2 = "*"
+lemminflect = "*"
 
 [dev-packages]
 

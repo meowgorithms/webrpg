@@ -1,48 +1,55 @@
 """
 Provides character archetypes (aka classes)
 """
-from .gear import ArcaneSet, GearSet, QuantumGearSet
-from .queries import get_base_stats
-from .abilities import Ability, Collapse, Disintegrate, Tunnel, Abilities
+from .gear import GearSet
+from .spells import Spell, Spells
 from dataclasses import dataclass, field
 
 
+BASE_STATS = {
+    "health": 100,
+    "physical_attack": 5,
+    "physical_defense": 5,
+    "magic_attack": 5,
+    "magic_defense": 5,
+}
+
+
 @dataclass(init=True)
-class ArchetypeData:
+class CharacterData:
     """
     Data container for archetypes
     """
-    archetype_name: str = field(init=True)
     name: str = field(init=True)
-    abilities: Abilities = Abilities()
+    level = 1
+    spells: list[Spell] = []
+    gear: GearSet = GearSet()
 
-    base_health: int = 0
-    base_physical_attack: int = 0
-    base_physical_defense: int = 0
-    base_magic_attack: int = 0
-    base_magic_defense: int = 0
+    base_health: int = BASE_STATS["health"]
+    base_physical_attack: int = BASE_STATS["physical_attack"]
+    base_physical_defense: int = BASE_STATS["physical_defense"]
+    base_magic_attack: int = BASE_STATS["magic_attack"]
+    base_magic_defense: int = BASE_STATS["magic_defense"]
 
     # Initialize stats from base stats
-    max_health: int = 0
-    physical_attack: int = 0
-    physical_defense: int = 0
-    magic_attack: int = 0
-    magic_defense: int = 0
+    max_health: int = base_health
+    physical_attack: int = base_physical_attack
+    physical_defense: int = base_physical_defense
+    magic_attack: int = base_magic_attack
+    magic_defense: int = base_magic_defense
 
     # An extra bit to track current stats vs max / normal
-    current_health: int = 0
-    current_physical_attack: int = 0
-    current_physical_defense: int = 0
-    current_magic_attack: int = 0
-    current_magic_defense: int = 0
+    current_health: int = max_health
+    current_physical_attack: int = physical_attack
+    current_physical_defense: int = physical_defense
+    current_magic_attack: int = magic_attack
+    current_magic_defense: int = magic_defense
 
-    gear: GearSet = None # TODO Build GearSet.Empty
-    level = 1
+
 
     def __repr__(self):
         return f"""
         {self.name}: Level {self.level}
-        Archetype: {self.archetype_name}
         {self.gear}
         Abilities: {self.abilities}
         Base Health: {self.base_health}
@@ -67,29 +74,8 @@ class Character:
     """
     Base class for all archetypes
     """
-    def __init__(self, name: str, archetype_name: str):
-        self.data = Character(archetype_name,
-                                  name)
-        # Is there a better way to do this?
-        base_stats = get_base_stats(archetype_name)
-
-        self.data.base_health = base_stats[1]
-        self.data.base_physical_attack = base_stats[2]
-        self.data.base_physical_defense = base_stats[3]
-        self.data.base_magic_attack = base_stats[4]
-        self.data.base_magic_defense = base_stats[5]
-        # Initialize stats from base stats
-        self.data.max_health = base_stats[1]
-        self.data.physical_attack = base_stats[2]
-        self.data.physical_defense = base_stats[3]
-        self.data.magic_attack = base_stats[4]
-        self.data.magic_defense = base_stats[5]
-        # An extra bit to track current stats vs max / normal
-        self.data.current_health = base_stats[1]
-        self.data.current_physical_attack = base_stats[2]
-        self.data.current_physical_defense = base_stats[3]
-        self.data.current_magic_attack = base_stats[4]
-        self.data.current_magic_defense = base_stats[5]
+    def __init__(self, name: str):
+        self.data = CharacterData(name)
 
     def take_damage(self, damage):
         self.data.current_health -= round(damage)
@@ -104,15 +90,5 @@ class Character:
     def __repr__(self):
         return str(self.data)
 
-    def add_ability(self, ability: Ability):
-        return self.data.abilities.add_ability(ability)
-
-
-
-# THE BANGBROS -> FAILURE SAMURAI BROTHERS
-class BangBrosuo(Character):
-    pass
-
-
-class BangBrone(Character):
-    pass
+    def learn_spell(self, spell: Spell):
+        self.data.spells.append(spell)

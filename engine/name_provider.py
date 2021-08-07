@@ -10,109 +10,76 @@ def read_from_file(filepath):
     return words.split()
 
 SPELL_FORMATS = [
-    "N N",
-    "PADJ N",
-    "NADJ N",
-    "ADJ N",
-    "VBG N"
+    "SN SN",
+    "PADJ SN",
+    "NADJ SN",
+    "ADJ SN",
+    "VBG SN"
 ]
 
+ARMOR_FORMATS = [
+    "AN",
+    "ADJ AN",
+    "PADJ AN",
+    "NADJ AN",
+    "AN of TN",
+    "VBG AN",
+]
 
 WEAPON_FORMATS = [
-    "PADJ N",
-    "NADJ N",
-    "PADJ N of VBG",
-    "NADJ N of VBG",
-    "N of VBG",
-    "VBG N",
-    "VBG N of VBG"
+    "PADJ WN",
+    "NADJ WN",
+    "PADJ WN of TN",
+    "NADJ WN of TN",
+    "WN of TN",
+    "VBG WN",
+    "VBG WN of TN",
+    "WN",
+    "ADJ WN",
+    "N WN",
+    "WN of VBG",
+    "VBG WN",
+    "ADJ N"
 ]
 
+SPECIAL_ITEM_FORMATS = [
+    "N",
+    "TN N",
+    "VBG N",
+    "N of TN",
+    "The N",
+    "The N of TN",
+    "The VBG",
+    "The TN",
+    "N N",
+    "NADJ N",
+    "PADJ N",
+    "ADJ N",
+    "ADJ N of TN",
+    "ADJ TN",
+]
 
-def create_spell_name(name_format: str = choice(SPELL_FORMATS)):
-    if name_format == "N N":
-        nouns = read_from_file("words/spell_words.txt")
-        first = choice(nouns)
-        second = choice(nouns)
-        if second == first:
-            while second == first:
-                second = choice(nouns)
-        return f"{first.capitalize()} {second.capitalize()}"
-    elif name_format == "PADJ N":
-        adjectives = read_from_file("words/positive_adjectives.txt")
-        nouns = read_from_file("words/spell_words.txt")
-        first = choice(adjectives)
-        second = choice(nouns)
-        return f"{first.capitalize()} {second.capitalize()}"
-    elif name_format == "NADJ N":
-        adjectives = read_from_file("words/negative_adjectives.txt")
-        nouns = read_from_file("words/spell_words.txt")
-        first = choice(adjectives)
-        second = choice(nouns)
-        return f"{first.capitalize()} {second.capitalize()}"
-    elif name_format == "ADJ N":
-        adjectives = read_from_file("words/all_adj.txt")
-        nouns = read_from_file("words/spell_words.txt")
-        first = choice(adjectives)
-        second = choice(nouns)
-        return f"{first.capitalize()} {second.capitalize()}"
-    elif name_format == "VBG N":
-        gerunds = read_from_file("words/gerunds.txt")
-        nouns = read_from_file("words/spell_words.txt")
-        first = choice(gerunds)
-        second = choice(nouns)
-        return f"{first.capitalize()} {second.capitalize()}"
+POS_DICT = {
+    "N": "words/nouns.txt",
+    "ADJ": "words/all_adj.txt",
+    "PADJ": "words/positive_adjectives.txt",
+    "NADJ": "words/negative_adjectives.txt",
+    "TN": "words/tion_nouns.txt",
+    "VBG": "words/gerunds.txt",
+    "AN": "words/armor_nouns.txt",
+    "SN": "words/spell_words.txt",
+    "WN": "words/weapon_nouns.txt",
+    "VB": "words/verbs.txt"
+}
 
 
-def create_weapon_name(name_format: str = choice(WEAPON_FORMATS)):
-    if name_format == "PADJ N":
-        adjectives = read_from_file("words/positive_adjectives.txt")
-        nouns = read_from_file("words/weapon_nouns.txt")
-        first = choice(adjectives).capitalize()
-        second = choice(nouns).capitalize()
-        return f"{first} {second}"
-    elif name_format == "NADJ N":
-        adjectives = read_from_file("words/negative_adjectives.txt")
-        nouns = read_from_file("words/weapon_nouns.txt")
-        first = choice(adjectives).capitalize()
-        second = choice(nouns).capitalize()
-        return f"{first} {second}"
-    elif name_format == "PADJ N of VBG":
-        adjectives = read_from_file("words/positive_adjectives.txt")
-        nouns = read_from_file("words/weapon_nouns.txt")
-        gerunds = read_from_file("words/gerunds.txt")
-        first = choice(adjectives).capitalize()
-        second = choice(nouns).capitalize()
-        third = choice(gerunds).capitalize()
-        return f"{first} {second} of {third}"
-    elif name_format == "NADJ N of VBG":
-        adjectives = read_from_file("words/negative_adjectives.txt")
-        nouns = read_from_file("words/weapon_nouns.txt")
-        gerunds = read_from_file("words/gerunds.txt")
-        first = choice(adjectives).capitalize()
-        second = choice(nouns).capitalize()
-        third = choice(gerunds).capitalize()
-        return f"{first} {second} of {third}"
-    elif name_format == "N of VBG":
-        nouns = read_from_file("words/weapon_nouns.txt")
-        gerunds = read_from_file("words/gerunds.txt")
-        first = choice(nouns).capitalize()
-        second = choice(gerunds).capitalize()
-        return f"{first} of {second}"
-    elif name_format == "VBG N":
-        nouns = read_from_file("words/weapon_nouns.txt")
-        gerunds = read_from_file("words/gerunds.txt")
-        first = choice(gerunds).capitalize()
-        second = choice(nouns).capitalize()
-        return f"{first} of {second}"
-    elif name_format == "VBG N of VBG":
-        nouns = read_from_file("words/weapon_nouns.txt")
-        gerunds = read_from_file("words/gerunds.txt")
-        first = choice(gerunds).capitalize()
-        third = choice(gerunds).capitalize()
-        second = choice(nouns).capitalize()
-        if third == first:
-            while third == first:
-                third = choice(gerunds).capitalize()
-        return f"{first} {second} of {third}"
-
+def create_name(name_formats: 'list[str]'):
+    name_format = choice(name_formats)
+    name = name_format.split()
+    for i, pos in enumerate(name):
+        if pos != 'of':
+            name[i] = choice(read_from_file(POS_DICT[pos]))
+            if name[i] in name[:i]:
+                while name[i] in name[:i]:
+                    name[i] = choice(read_from_file(POS_DICT[pos]))
+    return " ".join(name)

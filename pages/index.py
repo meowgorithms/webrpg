@@ -3,11 +3,11 @@ import dash
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
-from engine.archetypes import Quantum
+from engine import name_provider
 
 def test_creation():
-    character = Quantum("Fred")
-    return str(character)
+    name = name_provider.create_spell_name()
+    return str()
 
 
 # Components and columns

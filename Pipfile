@@ -13,6 +13,9 @@ python-dotenv = "*"
 ipykernel = "*"
 psycopg2 = "*"
 lemminflect = "*"
+spacy = "*"
+textblob = "*"
+nltk = "*"
 
 [dev-packages]
 

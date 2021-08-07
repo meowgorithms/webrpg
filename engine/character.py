@@ -63,12 +63,12 @@ class ArchetypeData:
         """
 
 
-class Archetype:
+class Character:
     """
     Base class for all archetypes
     """
     def __init__(self, name: str, archetype_name: str):
-        self.data = ArchetypeData(archetype_name,
+        self.data = Character(archetype_name,
                                   name)
         # Is there a better way to do this?
         base_stats = get_base_stats(archetype_name)
@@ -108,46 +108,11 @@ class Archetype:
         return self.data.abilities.add_ability(ability)
 
 
-class Quantum(Archetype):
-    """
-    Archetype themed around quantum behavior
-    """
-
-    # TODO
-    def __init__(self, name: str):
-        super().__init__(name, "Quantum")
-        self.data.gear = QuantumGearSet()
-        self.add_ability(Tunnel(self))
-        self.add_ability(Collapse(self))
-        self.add_ability(Disintegrate(self))
-
-
-# These are not MVP
-# Does this imply the existence of a normal dragon archetype?
-class ArchDragon(Archetype):
-    """
-    Archetype themed around dragons
-    """
-
-    # TODO
-    def __init__(self):
-        super(self)
-
-
-class Valence(Archetype):
-    """
-    Archetype themed around peace or balance or some shit
-    """
-
-    # TODO
-    def __init__(self):
-        super(self)
-
 
 # THE BANGBROS -> FAILURE SAMURAI BROTHERS
-class BangBrosuo(Archetype):
+class BangBrosuo(Character):
     pass
 
 
-class BangBrone(Archetype):
+class BangBrone(Character):
     pass

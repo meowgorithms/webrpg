@@ -4,7 +4,6 @@ toolshed
 kabar
 larp
 shrap
-amunition
 machete
 ripcord
 manuever
@@ -430,12 +429,10 @@ iaito
 pein
 deathgrip
 scimitar
-wepon
 truncheon
 bandoleer
 defiler
 kubaton
-mel�e
 tacke
 caber
 reaver
@@ -449,7 +446,6 @@ shoulderpad
 marlinspike
 surcoat
 peashooter
-�p�e
 karambit
 pocketknife
 shiled
@@ -459,7 +455,6 @@ rocketlauncher
 foundary
 kife
 taunter
-m�l�e
 muleta
 mawashi
 thingamabob

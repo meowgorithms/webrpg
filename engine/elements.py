@@ -3,6 +3,7 @@ Elemental stuff
 """
 from enum import Enum, auto
 
+
 class Element(Enum):
     NONE = auto()
     LIGHT = auto()
@@ -20,45 +21,45 @@ class Element(Enum):
 
 # TODO Populate this shit
 LIGHT_WORDS = """
-
+light
 """
 
 DARK_WORDS = """
-
+dark
 """
 
 ELECTRIC_WORDS = """
-
+electric
 """
 
 FIRE_WORDS = """
-
+fire
 """
 
 WATER_WORDS = """
-
+water
 """
 
 EARTH_WORDS = """
-
+earth
 """
 
 AIR_WORDS = """
-
+air
 """
 
 METAL_WORDS = """
-
+metal
 """
 
 ACID_WORDS = """
-
+acid
 """
 
 PSYCHIC_WORDS = """
-
+psychic
 """
 
 WEIRD_WORDS = """
-
+weird
 """

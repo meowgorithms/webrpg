@@ -2,7 +2,7 @@
 Provides character archetypes (aka classes)
 """
 from .gear import GearSet
-from .spells import Spell, Spells
+from .spells import Spell
 from dataclasses import dataclass, field
 
 
@@ -46,12 +46,11 @@ class CharacterData:
     current_magic_defense: int = magic_defense
 
 
-
     def __repr__(self):
         return f"""
         {self.name}: Level {self.level}
         {self.gear}
-        Abilities: {self.abilities}
+        Abilities: {self.spells}
         Base Health: {self.base_health}
         Base Physical Attack: {self.base_physical_attack}
         Base Physical Defense: {self.base_physical_defense}

@@ -21,8 +21,6 @@ POST_STOPS = ['r', 's', 'k', 'n', 'v', 'z']
 
 SIBILANTS = ['sh', 's', 'zh', 'sh']
 
-FRICATIVES = ['th', 'f']
-
 PLOSIVES = ['t', 'k', 'r'] # r isn't a plosive but it fits in the same group for
 # this conlang
 
@@ -33,11 +31,10 @@ LANG_DICT = {
     "PRE": PRE_STOPS,
     "SIB": SIBILANTS,
     "PLOS": PLOSIVES,
-    "FRIC": FRICATIVES,
     "START": STARTS
 }
 
-MAX_LENGTH = 5
+MAX_LENGTH = 12
 
 RULES = {
     "START": ["V"],

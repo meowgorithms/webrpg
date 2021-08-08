@@ -1,7 +1,9 @@
 """
 Provides procedural generation for names
 """
-from random import choice
+from random import choice,  choices
+from . import elements as el
+
 
 def read_from_file(filepath):
     with open(filepath, 'r') as file:
@@ -10,53 +12,53 @@ def read_from_file(filepath):
     return words.split()
 
 SPELL_FORMATS = [
-    "SN SN",
-    "PADJ SN",
-    "NADJ SN",
-    "ADJ SN",
-    "VBG SN"
+    "E SN SN",
+    "PADJ E SN",
+    "NADJ E SN",
+    "ADJ E SN",
+    "E VBG SN"
 ]
 
 ARMOR_FORMATS = [
-    "AN",
-    "ADJ AN",
-    "PADJ AN",
-    "NADJ AN",
-    "AN of TN",
-    "VBG AN",
+    "E AN",
+    "ADJ E AN",
+    "PADJ E AN",
+    "NADJ E AN",
+    "E AN of TN",
+    "E VBG AN",
 ]
 
 WEAPON_FORMATS = [
-    "PADJ WN",
-    "NADJ WN",
-    "PADJ WN of TN",
-    "NADJ WN of TN",
-    "WN of TN",
-    "VBG WN",
-    "VBG WN of TN",
-    "WN",
-    "ADJ WN",
-    "N WN",
-    "WN of VBG",
-    "VBG WN",
-    "ADJ N"
+    "PADJ E WN",
+    "NADJ E WN",
+    "PADJ E WN of TN",
+    "NADJ E WN of TN",
+    "E WN of TN",
+    "E VBG WN",
+    "E VBG WN of TN",
+    "E WN",
+    "ADJ E WN",
+    "E N WN",
+    "E WN of VBG",
+    "E VBG WN",
+    "ADJ E N"
 ]
 
 SPECIAL_ITEM_FORMATS = [
-    "N",
-    "TN N",
-    "VBG N",
-    "N of TN",
-    "The N",
-    "The N of TN",
-    "The VBG",
-    "The TN",
-    "N N",
-    "NADJ N",
-    "PADJ N",
-    "ADJ N",
-    "ADJ N of TN",
-    "ADJ TN",
+    "E N",
+    "E TN N",
+    "E VBG N",
+    "E N of TN",
+    "The E N",
+    "The E N of TN",
+    "The E VBG",
+    "The E TN",
+    "E N N",
+    "NADJ E N",
+    "PADJ E N",
+    "ADJ E N",
+    "ADJ E N of TN",
+    "ADJ E TN",
 ]
 
 POS_DICT = {
@@ -69,17 +71,21 @@ POS_DICT = {
     "AN": "words/armor_nouns.txt",
     "SN": "words/spell_words.txt",
     "WN": "words/weapon_nouns.txt",
-    "VB": "words/verbs.txt"
+    "VB": "words/verbs.txt",
 }
 
 
-def create_name(name_formats: 'list[str]'):
-    name_format = choice(name_formats)
-    name = name_format.split()
+def create_name(name_formats: 'list[str]', element_word: str=""):
+    name = choice(name_formats).split()
+    if element_word == "":
+        if "E" in name:
+            name.remove("E")
     for i, pos in enumerate(name):
-        if pos != 'of':
-            name[i] = choice(read_from_file(POS_DICT[pos]))
+        if pos in POS_DICT:
+            name[i] = choice(read_from_file(POS_DICT[pos])).capitalize()
             if name[i] in name[:i]:
                 while name[i] in name[:i]:
-                    name[i] = choice(read_from_file(POS_DICT[pos]))
-    return " ".join(name)
+                    name[i] = choice(read_from_file(POS_DICT[pos])).capitalize()
+        if pos == "E":
+            name[i] = element_word.capitalize()
+    return " ".join(name).strip()

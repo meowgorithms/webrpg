@@ -2,10 +2,10 @@
 Elemental stuff
 """
 from enum import Enum, auto
+from random import choice, choices
 
 
 class Element(Enum):
-    NONE = auto()
     LIGHT = auto()
     DARK = auto()
     ELECTRIC = auto()
@@ -17,9 +17,9 @@ class Element(Enum):
     ACID = auto()
     PSYCHIC = auto()
     WEIRD = auto()
+    NONE = auto()
 
 ELEMENT_WEIGHTS = [
-    130,
     5,
     5,
     5,
@@ -30,7 +30,8 @@ ELEMENT_WEIGHTS = [
     5,
     5,
     5,
-    5
+    5,
+    130
 ]
 
 LIGHT_WORDS = [
@@ -256,3 +257,33 @@ ELEMENT_DICT = {
     Element.PSYCHIC: PSYCHIC_WORDS,
     Element.WEIRD: WEIRD_WORDS
 }
+
+
+def get_random_element(weighted: bool = True,
+                       guaranteed_element: bool = False):
+    """
+    ## Parameters
+    weighted: bool
+        If True, there's a high chance of not getting Element.NONE
+
+        If False, the distribution is uniform, but still includes Element.NONE
+    
+    guaranteed_element: bool
+        If True, there is no chance of getting Element.NONE, and the choice is
+        unweighted.
+    """
+    elements = [el for el in Element]
+    weights = ELEMENT_WEIGHTS.copy()
+    
+    if guaranteed_element:
+        elements.pop()
+        weights.pop()
+
+    if not weighted:
+        weights = [1] * len(elements)
+
+    return choices(elements, weights=weights, k=1)[0]
+
+
+def get_random_element_word(element: Element):
+    return choice(ELEMENT_DICT[element])

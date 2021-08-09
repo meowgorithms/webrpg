@@ -7,11 +7,15 @@ from . import name_provider as namer
 from random import choices, choice
 from abc import ABC
 
-
-class GearItem(ABC):
+@dataclass
+class GearItemData:
+    name: str
+    element: el.Element
     level: int = 1
+    requirements: dict = None
+    stats: dict = None
 
-    def __init__(self, element: el.Element=None):
+    def __init__(self, element: el.Element = None):
         if element is not None:
             self.element = element
         else:
@@ -19,8 +23,17 @@ class GearItem(ABC):
                                    weights=el.ELEMENT_WEIGHTS,
                                    k=1)[0]
 
+class GearItem(ABC):
+    def __init__(self, element: el.Element=None):
+        self.data = GearItemData(element)
+        element_word = el.get_random_element_word(element)
+        self.data.name = namer.create_name(namer.ARMOR_FORMATS, element_word)
+        
+
 
 class Armor(GearItem):
+
+
     def __init__(self, element: el.Element=None):
         super().__init__(element=element)
         element_word = choice(el.ELEMENT_DICT[self.element])

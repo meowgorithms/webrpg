@@ -4,6 +4,12 @@ Provides procedural generation for names
 from random import choice,  choices
 from . import elements as el
 
+# TODO
+# Words are currently very crude,
+# consider more filtering and potentially
+# some word2vec math to tune into the right words
+
+# Get root words and (lemm)inflect to ensure correctness
 
 def read_from_file(filepath):
     with open(filepath, 'r') as file:

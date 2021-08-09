@@ -1,3 +1,4 @@
+from typing import Iterable
 import lemminflect as lem
 import spacy
 from random import choice, randint, choices
@@ -137,7 +138,6 @@ def count_syllables(word: str):
 
 
 class Generator:
-    lexicon = set()
     ADJ_RULES = [
     "ti",
     "na",
@@ -146,15 +146,23 @@ class Generator:
     "va",
     "li"
     ]
-    VERB_RULES = ["or", "ru", "er", "ar"]
+
+    VERB_RULES = [
+        "or",
+        "ru",
+        "er",
+        "ar"
+        ]
+
     NOUN_RULES = []
 
+    lexicon = set()
     adjectives = set()
     verbs = set()
     nouns = set()
     dictionary = dict()
 
-    def filter_words(self, rules: 'list[str]'):
+    def filter_lexicon(self, rules: 'list[str]'):
         pass
 
     def generate_lexicon(self,
@@ -168,3 +176,11 @@ class Generator:
                 create_conlang_word(max_word_length,
                                     random_length,
                                     debug))
+    
+    def save_to_file(self, words: 'Iterable[str]', filepath: str):
+        with open(filepath, 'w') as file:
+            file.write("\n".join(words))
+
+    def read_from_file(self, attribute: str, filepath: str):
+        with open(filepath, 'r') as file:
+            setattr(self, attribute, file.read().split())

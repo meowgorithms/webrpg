@@ -1,3 +1,3 @@
 # webrpg
 
-Currently doesn't run, still in development
+Currently doesn't run, in development

@@ -7,6 +7,7 @@ from . import name_provider as namer
 from random import choices, choice
 from abc import ABC
 
+
 @dataclass
 class GearItemData:
     name: str
@@ -19,39 +20,29 @@ class GearItemData:
         if element is not None:
             self.element = element
         else:
-            self.element = choices([el for el in el.Element],
-                                   weights=el.ELEMENT_WEIGHTS,
-                                   k=1)[0]
+            self.element = el.get_random_element()
+
 
 class GearItem(ABC):
     def __init__(self, element: el.Element=None):
         self.data = GearItemData(element)
         element_word = el.get_random_element_word(element)
         self.data.name = namer.create_name(namer.ARMOR_FORMATS, element_word)
-        
 
 
 class Armor(GearItem):
-
-
     def __init__(self, element: el.Element=None):
         super().__init__(element=element)
-        element_word = choice(el.ELEMENT_DICT[self.element])
-        self.name = namer.create_name(namer.ARMOR_FORMATS, element_word)
 
 
 class Weapon(GearItem):
     def __init__(self, element: el.Element=None):
         super().__init__(element=element)
-        element_word = choice(el.ELEMENT_DICT[self.element])
-        self.name = namer.create_name(namer.WEAPON_FORMATS, element_word)
 
 
 class SpecialItem(GearItem):
     def __init__(self, element: el.Element=None):
         super().__init__(element=element)
-        element_word = choice(el.ELEMENT_DICT[self.element])
-        self.name = namer.create_name(namer.SPECIAL_ITEM_FORMATS, element_word)
 
 
 class GearSet:
@@ -71,7 +62,7 @@ class GearSet:
         else:
             self.armor.append(item)
             return f"Equipped {item.name}"
-    
+
     def __repr__(self):
         return f"""Armor:
             {[item for item in self.armor]}

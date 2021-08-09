@@ -10,8 +10,8 @@ from abc import ABC
 
 @dataclass
 class GearItemData:
-    name: str
-    element: el.Element
+    name: str = None
+    element: el.Element = None
     level: int = 1
     requirements: dict = None
     stats: dict = None
@@ -24,30 +24,36 @@ class GearItemData:
 
 
 class GearItem(ABC):
-    def __init__(self, element: el.Element=None):
+    def __init__(self, element: el.Element = None):
         self.data = GearItemData(element)
-        element_word = el.get_random_element_word(element)
-        self.data.name = namer.create_name(namer.ARMOR_FORMATS, element_word)
 
 
 class Armor(GearItem):
-    def __init__(self, element: el.Element=None):
+    def __init__(self, element: el.Element = None):
         super().__init__(element=element)
-
+        element_word = el.get_random_element_word(self.data.element)
+        self.data.name = namer.create_name(namer.ARMOR_FORMATS,
+                                           element_word)
 
 class Weapon(GearItem):
-    def __init__(self, element: el.Element=None):
+    def __init__(self, element: el.Element = None):
         super().__init__(element=element)
+        element_word = el.get_random_element_word(self.data.element)
+        self.data.name = namer.create_name(namer.WEAPON_FORMATS,
+                                           element_word)
 
 
 class SpecialItem(GearItem):
-    def __init__(self, element: el.Element=None):
+    def __init__(self, element: el.Element = None):
         super().__init__(element=element)
+        element_word = el.get_random_element_word(self.data.element)
+        self.data.name = namer.create_name(namer.SPECIAL_ITEM_FORMATS,
+                                           element_word)
 
 
 class GearSet:
     """
-    Container for equippable
+    Container for equippables
     """
     armor: 'list[Armor]' = []
     left_hand_weapon: Weapon = None
@@ -64,7 +70,8 @@ class GearSet:
             return f"Equipped {item.name}"
 
     def __repr__(self):
-        return f"""Armor:
+        return f"""
+        Armor:
             {[item for item in self.armor]}
         Left Hand:
             {self.left_hand_weapon}

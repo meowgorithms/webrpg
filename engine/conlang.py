@@ -134,3 +134,37 @@ def create_conlang_word(length: int = MAX_LENGTH,
 
 def count_syllables(word: str):
     pass
+
+
+class Generator:
+    lexicon = set()
+    ADJ_RULES = [
+    "ti",
+    "na",
+    "ya",
+    "yo",
+    "va",
+    "li"
+    ]
+    VERB_RULES = ["or", "ru", "er", "ar"]
+    NOUN_RULES = []
+
+    adjectives = set()
+    verbs = set()
+    nouns = set()
+    dictionary = dict()
+
+    def filter_words(self, rules: 'list[str]'):
+        pass
+
+    def generate_lexicon(self,
+                         size: int = 1_000_000,
+                         max_word_length: int = MAX_LENGTH,
+                         random_length: bool = True,
+                         debug: bool = False):
+
+        for _ in range(size):
+            self.lexicon.add(
+                create_conlang_word(max_word_length,
+                                    random_length,
+                                    debug))

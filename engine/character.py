@@ -1,8 +1,10 @@
 """
 Provides character archetypes (aka classes)
 """
-from .gear import GearSet
-from .spells import Spell
+from . import gear as gear
+from . import spells as spells
+from . import elements as el
+from . import conlang
 from dataclasses import dataclass, field
 
 
@@ -11,7 +13,7 @@ BASE_STATS = {
     "physical_attack": 5,
     "physical_defense": 5,
     "magic_attack": 5,
-    "magic_defense": 5,
+    "magic_defense": 5
 }
 
 
@@ -22,9 +24,11 @@ class CharacterData:
     """
     name: str = field(init=True)
     level = 1
-    spells: list[Spell] = []
-    gear: GearSet = GearSet()
+    spells: 'list[spells.Spell]' = []
+    gear: gear.GearSet = gear.GearSet()
 
+
+    # Base stats
     base_health: int = BASE_STATS["health"]
     base_physical_attack: int = BASE_STATS["physical_attack"]
     base_physical_defense: int = BASE_STATS["physical_defense"]
@@ -73,8 +77,10 @@ class Character:
     """
     Base class for all archetypes
     """
-    def __init__(self, name: str):
+    def __init__(self, name: str, random: bool = False):
         self.data = CharacterData(name)
+        if random:
+            self.data.name = conlang.create_conlang_word()
 
     def take_damage(self, damage):
         self.data.current_health -= round(damage)
@@ -89,5 +95,5 @@ class Character:
     def __repr__(self):
         return str(self.data)
 
-    def learn_spell(self, spell: Spell):
+    def learn_spell(self, spell: spells.Spell):
         self.data.spells.append(spell)

@@ -15,7 +15,9 @@ class GearItem(ABC):
         if element is not None:
             self.element = element
         else:
-            self.element = choices([el for el in el.Element], weights=el.ELEMENT_WEIGHTS, k=1)[0]
+            self.element = choices([el for el in el.Element],
+                                   weights=el.ELEMENT_WEIGHTS,
+                                   k=1)[0]
 
 
 class Armor(GearItem):
@@ -23,7 +25,7 @@ class Armor(GearItem):
         super().__init__(element=element)
         element_word = choice(el.ELEMENT_DICT[self.element])
         self.name = namer.create_name(namer.ARMOR_FORMATS, element_word)
-  
+
 
 class Weapon(GearItem):
     def __init__(self, element: el.Element=None):

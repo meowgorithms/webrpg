@@ -30,9 +30,8 @@ ELEMENT_WEIGHTS = [
     5,
     5,
     5,
-    5,
+    5
 ]
-
 
 LIGHT_WORDS = [
     'light',

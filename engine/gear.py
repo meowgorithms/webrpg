@@ -57,6 +57,9 @@ class Weapon(GearItem):
         self.data.name = namer.create_name(namer.WEAPON_FORMATS,
                                            element_word)
 
+    def __provide_stats__(self, user: 'character.Character'):
+        return super().__provide_stats__(user)
+
 
 class SpecialItem(GearItem):
     def __init__(self, element: el.Element = None):
@@ -64,6 +67,9 @@ class SpecialItem(GearItem):
         element_word = el.get_random_element_word(self.data.element)
         self.data.name = namer.create_name(namer.SPECIAL_ITEM_FORMATS,
                                            element_word)
+
+    def __provide_stats__(self, user: 'character.Character'):
+        return super().__provide_stats__(user)
 
 
 class GearSet:
@@ -73,11 +79,11 @@ class GearSet:
 
     def __init__(self):
         self.armor: 'list[Armor]' = []
-        self.left_hand_weapon: Weapon = None
-        self.right_hand_weapon: Weapon = None
+        self.weapons: 'list[Weapon]' = []
         self.special: 'list[SpecialItem]' = []
         self.special_max_size = 5
         self.armor_max_size = 5
+        self.weapon_max = 2
 
     def equip(self, item: GearItem):
         print(type(item))
@@ -98,12 +104,13 @@ class GearSet:
             self.special.append(special_item)
 
     def __equip_weapon__(self, weapon: Weapon):
-        if self.left_hand_weapon is None:
-            self.left_hand_weapon = weapon
-        elif self.right_hand_weapon is None:
-            self.right_hand_weapon = weapon
-        else:
+        if len(self.weapons) >= self.weapon_max:
             print("Oh noes! You've got your hands full!! D:")
+            return "Weapon slots full"
+        else:
+            self.weapons.append(weapon)
+            return f"Equipped {weapon.data.name}"
+            
 
     def __equip_armor__(self, armor_item: Armor):
         if len(self.armor) >= self.armor_max_size:
@@ -116,10 +123,8 @@ class GearSet:
         return f"""
         Armor:
             {[item.data for item in self.armor]}
-        Left Hand:
-            {self.left_hand_weapon}
-        Right Hand:
-            {self.right_hand_weapon}
+        Weapons:
+            {[item.data for item in self.weapons]}
         Special:
             {[item.data for item in self.special]}
         """

@@ -10,7 +10,7 @@ import numpy as np
 from dataclasses import dataclass, field
 
 # TODO Create leveling system
-# con, str, int, ?
+# con, str, int, elemental affinity
 # needs to be done first,
 # item requirement generation depends on level system
 # item stat generation depends on item requirements
@@ -25,24 +25,57 @@ BASE_STATS = {
 }
 
 
-@dataclass(init=True)
+
 class CharacterData:
     """
     Data container for archetypes
     """
-    first_name: str = field(init=True)
-    last_name: str = field(init=True)
+    first_name: str = ""
+    last_name: str = ""
     level = 1
     money: float = 0
     spells = []
     inventory = []
     gear: 'g.GearSet' = g.GearSet()
 
-    experience = 0
+    # --- Required EXP ---
+    @property
+    def required_exp(self):
+        return round(10000 / (1 + np.e ** (-.1 * (self.level - 50))) + 26)
+
+    # --- EXP ---
+    _experience = 0
+    @property
+    def experience(self):
+        return self._experience
+
+    @experience.setter
+    def experience(self, value):
+        self._experience = value
+        while self._experience >= self.required_exp:
+            self._experience -= self.required_exp
+            self.level += 1
+            self.attribute_points += 2
+            self.current_health += round(self.max_health * .33)
+
+
+
     # Attributes
-    strength = 1
+    _strength = 1
+    @property
+    def strength(self):
+        return self._strength
+    
+    @strength.setter
+    def strength(self, value):
+        if self.attribute_points >= value:
+            self._strength = value
+            self.attribute_points -= value
+
     constitution = 1
-    intelligence = 1
+    intelligence = 1 # -> extra attack and defense for ALL elements
+    # TODO expand into elements
+    electric_affinity = 1 # -> extra electric attack and defense
 
     # 2 points granted upon leveling up
     attribute_points = 0
@@ -54,25 +87,54 @@ class CharacterData:
     base_magic_attack: int = BASE_STATS["magic_attack"]
     base_magic_defense: int = BASE_STATS["magic_defense"]
 
-    # Initialize stats from base stats
+    # -- Max Health ---
     @property
     def max_health(self):
-        return self.base_health + (5 * self.constitution)
+        return self.base_health \
+            + (5 * (self.constitution - 1)) \
+            + 2 * (self.level - 1)
 
-    physical_attack: int = base_physical_attack
-    physical_defense: int = base_physical_defense
+    # --- Current Health ---
+    _current_health = base_health + (5 * (constitution - 1))
+    @property
+    def current_health(self) -> int:
+        return self._current_health
+
+    # --- Physical Attack ---
+    @property
+    def physical_attack(self):
+        return self.base_physical_attack + (self.strength - 1) * 5
+
+    # --- Physical Defense ---
+    @property
+    def physical_defense(self):
+        return self.base_physical_defense \
+            + (self.strength - 1) * 2 \
+            + (self.constitution - 1) * 3
+
     magic_attack: int = base_magic_attack
     magic_defense: int = base_magic_defense
 
     # An extra bit to track current stats vs max / normal
-    @property
-    def current_health(self) -> int:
-        return self.current_health
+    
+
+    @current_health.setter
+    def current_health(self, value):
+        self._current_health = value
+        if self._current_health > self.max_health:
+            self._current_health = self.max_health
+        elif self._current_health < 0:
+            self._current_health = 0
+
     current_physical_attack: int = physical_attack
     current_physical_defense: int = physical_defense
     current_magic_attack: int = magic_attack
     current_magic_defense: int = magic_defense
 
+
+    def __init__(self, first_name: str = "", last_name: str = ""):
+        self.first_name = first_name
+        self.last_name = last_name
 
 
     def __repr__(self):
@@ -80,6 +142,12 @@ class CharacterData:
         {(self.first_name.capitalize() 
         + " "
         + self.last_name.capitalize()).strip()}: Level {self.level}
+        {self.experience} / {self.required_exp} EXP
+        Attribute Points: {self.attribute_points}
+        
+        Strength: {self.strength}
+        Intelligence: {self.intelligence}
+        Constitution: {self.constitution}
         {self.gear}
         Abilities: {self.spells}
         Health: {self.current_health}/{self.max_health}
@@ -91,9 +159,6 @@ class CharacterData:
 
 
 class Character:
-    """
-    Base class for all archetypes
-    """
     def __init__(self,
                  first_name: str = '',
                  last_name: str = '',
@@ -112,14 +177,6 @@ class Character:
     def learn_spell(self, spell: spells.Spell):
         self.data.spells.append(spell)
 
-    def level_up(self):
-        # exp requirement per level
-        required_exp = round(1000 / (1 + np.e ** (-.1 * (self.data.level - 50))))
-        if self.data.experience >= required_exp:
-            self.data.level += 1
-            self.data.attribute_points += 2
-            self.data.experience -= required_exp
-
     def apply_attribute_point(self, target: str):
         attr_dict = {
             "strength": self.data.strength,
@@ -130,14 +187,10 @@ class Character:
 
     # combat utils
     def take_damage(self, damage):
-        self.data.current_health -= round(damage)
-        if self.data.current_health < 0:
-            self.data.current_health = 0
+        self.data.current_health -= damage
 
     def recover_health(self, amount):
         self.data.current_health += round(amount)
-        if self.data.current_health >= self.data.max_health:
-            self.data.current_health = self.data.max_health
 
     # dunders
     def __repr__(self):

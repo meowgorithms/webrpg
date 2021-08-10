@@ -55,18 +55,24 @@ class CharacterData:
     base_magic_defense: int = BASE_STATS["magic_defense"]
 
     # Initialize stats from base stats
-    max_health: int = base_health
+    @property
+    def max_health(self):
+        return self.base_health + (5 * self.constitution)
+
     physical_attack: int = base_physical_attack
     physical_defense: int = base_physical_defense
     magic_attack: int = base_magic_attack
     magic_defense: int = base_magic_defense
 
     # An extra bit to track current stats vs max / normal
-    current_health: int = max_health
+    @property
+    def current_health(self) -> int:
+        return self.current_health
     current_physical_attack: int = physical_attack
     current_physical_defense: int = physical_defense
     current_magic_attack: int = magic_attack
     current_magic_defense: int = magic_defense
+
 
 
     def __repr__(self):
@@ -114,6 +120,14 @@ class Character:
             self.data.attribute_points += 2
             self.data.experience -= required_exp
 
+    def apply_attribute_point(self, target: str):
+        attr_dict = {
+            "strength": self.data.strength,
+            "constitution": self.data.constitution,
+            "intelligence": self.data.intelligence
+        }
+        attr_dict[target] += 5
+
     # combat utils
     def take_damage(self, damage):
         self.data.current_health -= round(damage)
@@ -124,8 +138,6 @@ class Character:
         self.data.current_health += round(amount)
         if self.data.current_health >= self.data.max_health:
             self.data.current_health = self.data.max_health
-
-
 
     # dunders
     def __repr__(self):

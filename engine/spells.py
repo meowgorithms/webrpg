@@ -1,7 +1,3 @@
-"""
-Provides spell class definitions, damage types, and other related helper
-classes and functions
-"""
 from . import elements as el
 from abc import abstractmethod
 from dataclasses import dataclass

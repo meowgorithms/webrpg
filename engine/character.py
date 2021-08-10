@@ -1,11 +1,19 @@
 """
 Provides character archetypes (aka classes)
 """
-from . import gear as gear
+from . import gear as g
 from . import spells as spells
 from . import elements as el
 from . import conlang
+from . import items
+import numpy as np
 from dataclasses import dataclass, field
+
+# TODO Create leveling system
+# con, str, int, ?
+# needs to be done first,
+# item requirement generation depends on level system
+# item stat generation depends on item requirements
 
 
 BASE_STATS = {
@@ -22,11 +30,22 @@ class CharacterData:
     """
     Data container for archetypes
     """
-    name: str = field(init=True)
+    first_name: str = field(init=True)
+    last_name: str = field(init=True)
     level = 1
-    spells: 'list[spells.Spell]' = []
-    gear: gear.GearSet = gear.GearSet()
+    money: float = 0
+    spells = []
+    inventory = []
+    gear: 'g.GearSet' = g.GearSet()
 
+    experience = 0
+    # Attributes
+    strength = 1
+    constitution = 1
+    intelligence = 1
+
+    # 2 points granted upon leveling up
+    attribute_points = 0
 
     # Base stats
     base_health: int = BASE_STATS["health"]
@@ -52,20 +71,12 @@ class CharacterData:
 
     def __repr__(self):
         return f"""
-        {self.name}: Level {self.level}
+        {(self.first_name.capitalize() 
+        + " "
+        + self.last_name.capitalize()).strip()}: Level {self.level}
         {self.gear}
         Abilities: {self.spells}
-        Base Health: {self.base_health}
-        Base Physical Attack: {self.base_physical_attack}
-        Base Physical Defense: {self.base_physical_defense}
-        Base Magic Attack: {self.base_magic_attack}
-        Base Magic Defense: {self.base_magic_defense}
-        Max Health: {self.max_health}
-        Physical Attack: {self.physical_attack}
-        Physical Defense: {self.physical_defense}
-        Magic Attack: {self.magic_attack}
-        Magic Defense: {self.magic_defense}
-        Current Health: {self.current_health}
+        Health: {self.current_health}/{self.max_health}
         Current Physical Attack: {self.current_physical_attack}
         Current Physical Defense: {self.current_physical_defense}
         Current Magic Attack: {self.current_magic_attack}
@@ -77,11 +88,33 @@ class Character:
     """
     Base class for all archetypes
     """
-    def __init__(self, name: str, random: bool = False):
-        self.data = CharacterData(name)
-        if random:
-            self.data.name = conlang.create_conlang_word()
+    def __init__(self,
+                 first_name: str = '',
+                 last_name: str = '',
+                 random_name: bool = False):
+        self.data = CharacterData(first_name, last_name)
 
+        if random_name \
+        or (first_name == '' and last_name == ''):
+            self.data.first_name = conlang.create_conlang_word(length=8)
+            self.data.last_name = conlang.create_conlang_word(length=8)
+
+    # data utils
+    def equip(self, item: g.GearItem):
+        self.data.gear.equip(item)
+
+    def learn_spell(self, spell: spells.Spell):
+        self.data.spells.append(spell)
+
+    def level_up(self):
+        # exp requirement per level
+        required_exp = round(1000 / (1 + np.e ** (-.1 * (self.data.level - 50))))
+        if self.data.experience >= required_exp:
+            self.data.level += 1
+            self.data.attribute_points += 2
+            self.data.experience -= required_exp
+
+    # combat utils
     def take_damage(self, damage):
         self.data.current_health -= round(damage)
         if self.data.current_health < 0:
@@ -92,8 +125,8 @@ class Character:
         if self.data.current_health >= self.data.max_health:
             self.data.current_health = self.data.max_health
 
+
+
+    # dunders
     def __repr__(self):
         return str(self.data)
-
-    def learn_spell(self, spell: spells.Spell):
-        self.data.spells.append(spell)

@@ -16,6 +16,7 @@ lemminflect = "*"
 spacy = "*"
 textblob = "*"
 nltk = "*"
+matplotlib = "*"
 
 [dev-packages]
 

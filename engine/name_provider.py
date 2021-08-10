@@ -92,6 +92,7 @@ def create_name(name_formats: 'list[str]', element_word: str=""):
             if name[i] in name[:i]:
                 while name[i] in name[:i]:
                     name[i] = choice(read_from_file(POS_DICT[pos])).capitalize()
+        # TODO Fix inflections here
         if pos == "E":
             name[i] = element_word.capitalize()
     return " ".join(name).strip()

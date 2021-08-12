@@ -15,19 +15,28 @@ if TYPE_CHECKING:
 
 # TODO build out stats and requirements provider for procedural loot generator
 
-@dataclass
+
 class GearItemData:
-    name: str = None
+    name: str = ''
     element: el.Element = None
     level: int = 1
-    requirements: dict = None
-    stats: dict = None
+    requirements: dict = {}
+    stats: dict = {}
 
     def __init__(self, element: el.Element = None):
         if element is not None:
             self.element = element
         else:
             self.element = el.get_random_element()
+    
+    def __repr__(self):
+        return f"""{self.name}: Level {self.level}
+            Element: {self.element.name.lower().capitalize()}
+            Requirements:
+                {[req for req in self.requirements]}
+            Stats:
+                {[stat + ': ' + str(self.stats[stat]) for stat in self.stats]}
+        """
 
 
 class GearItem(ABC):
@@ -37,6 +46,9 @@ class GearItem(ABC):
     @abstractmethod
     def __provide_stats__(self, user: 'character.Character'):
         pass
+
+    def __repr__(self):
+        return str(self.data)
 
 
 class Armor(GearItem):
@@ -86,15 +98,11 @@ class GearSet:
         self.weapon_max = 2
 
     def equip(self, item: GearItem):
-        print(type(item))
         if type(item) is Armor:
-            print(type(item) is Armor)
             self.__equip_armor__(item)
-        if type(item) is Weapon:
-            print(item is Weapon)
+        elif type(item) is Weapon:
             self.__equip_weapon__(item)
-        if type(item) is SpecialItem:
-            print(type(item) is SpecialItem)
+        elif type(item) is SpecialItem:
             self.__equip_special_item__(item)
 
     def __equip_special_item__(self, special_item: SpecialItem):
@@ -109,8 +117,7 @@ class GearSet:
             return "Weapon slots full"
         else:
             self.weapons.append(weapon)
-            return f"Equipped {weapon.data.name}"
-            
+            return f"Equipped {weapon.data.name}"    
 
     def __equip_armor__(self, armor_item: Armor):
         if len(self.armor) >= self.armor_max_size:

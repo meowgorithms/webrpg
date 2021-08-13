@@ -1,13 +1,13 @@
 """
 Provides character archetypes (aka classes)
 """
+from dataclasses import dataclass
 from . import gear as g
 from . import spells as spells
 from . import elements as el
 from . import conlang
 from . import items
 import numpy as np
-from dataclasses import dataclass, field
 
 # TODO Create leveling system
 # con, str, int, elemental affinity
@@ -29,13 +29,6 @@ class CharacterData:
     """
     Data container for archetypes
     """
-    first_name: str = ""
-    last_name: str = ""
-    level = 1
-    money: float = 0
-    spells = []
-    inventory = []
-    gear: 'g.GearSet' = g.GearSet()
 
     # --- Required EXP ---
     @property
@@ -43,7 +36,6 @@ class CharacterData:
         return round(10000 / (1 + np.e ** (-.1 * (self.level - 50))) + 26)
 
     # --- EXP ---
-    _experience = 0
     @property
     def experience(self):
         return self._experience
@@ -57,36 +49,7 @@ class CharacterData:
             self.attribute_points += 2
             self.current_health += round(self.max_health * .33)
 
-    attributes = {
-        "strength": 1,
-        "constitution": 1,
-        "intelligence": 1,
-        # Elemental Affinities
-        "light": 1,
-        "dark": 1,
-        "electric": 1,
-        "fire": 1,
-        "water": 1,
-        "earth": 1,
-        "air": 1,
-        "metal": 1,
-        "acid": 1,
-        "psychic": 1,
-        "weird": 1
-    }
-
-    # 2 points granted upon leveling up
-    attribute_points = 0
-
-    # Base stats
-    base_health: int = BASE_STATS["health"]
-    base_physical_attack: int = BASE_STATS["physical_attack"]
-    base_physical_defense: int = BASE_STATS["physical_defense"]
-    base_magic_attack: int = BASE_STATS["magic_attack"]
-    base_magic_defense: int = BASE_STATS["magic_defense"]
-
     # -- Max Health ---
-    _max_health = base_health
     @property
     def max_health(self):
         return self._max_health \
@@ -98,7 +61,6 @@ class CharacterData:
         self._max_health += value
 
     # --- Current Health ---
-    _current_health = base_health
     @property
     def current_health(self) -> int:
         return self._current_health
@@ -114,13 +76,13 @@ class CharacterData:
     # --- Physical Attack ---
     @property
     def physical_attack(self):
-        return self.base_physical_attack + \
+        return self._physical_attack + \
             (self.attributes["strength"] - 1) * 5
 
     # --- Physical Defense ---
     @property
     def physical_defense(self):
-        return self.base_physical_defense \
+        return self._physical_defense \
             + (self.attributes["strength"] - 1) * 2 \
             + (self.attributes["constitution"] - 1) * 3
 
@@ -141,7 +103,7 @@ class CharacterData:
             self.weird
             ) / 11)
 
-        return self.base_magic_attack + \
+        return self._magic_attack + \
             (self.attributes["intelligence"] - 1) * 5 + \
                 from_attributes
 
@@ -161,7 +123,7 @@ class CharacterData:
             self.psychic + \
             self.weird
             ) / 11)
-        return self.base_magic_attack + \
+        return self._magic_attack + \
             (self.attributes["intelligence"] - 1) * 5 + \
                 from_attributes
 
@@ -211,14 +173,46 @@ class CharacterData:
         return (self.attributes["weird"] - 1) * 10 + 1
 
     # An extra bit to track current stats vs max / normal
-    current_physical_attack: int = physical_attack
-    current_physical_defense: int = physical_defense
-    current_magic_attack: int = magic_attack
-    current_magic_defense: int = magic_defense
+
 
     def __init__(self, first_name: str = "", last_name: str = ""):
         self.first_name = first_name
         self.last_name = last_name
+        self.level = 1
+        self.money: float = 0
+        self.spells = []
+        self.inventory = []
+        self.gear: 'g.GearSet' = g.GearSet()
+        self.attributes = {
+            "strength": 1,
+            "constitution": 1,
+            "intelligence": 1,
+            # Elemental Affinities
+            "light": 1,
+            "dark": 1,
+            "electric": 1,
+            "fire": 1,
+            "water": 1,
+            "earth": 1,
+            "air": 1,
+            "metal": 1,
+            "acid": 1,
+            "psychic": 1,
+            "weird": 1
+        }
+        self._experience = 0
+        self._max_health = BASE_STATS["health"]
+        self._current_health = BASE_STATS["health"]
+        self._physical_attack = BASE_STATS["physical_attack"]
+        self._physical_defense = BASE_STATS["physical_defense"]
+        self._magic_attack = BASE_STATS["magic_attack"]
+        self._magic_defense = BASE_STATS["magic_defense"]
+        self.attribute_points = 0
+        self.current_physical_attack: int = self.physical_attack
+        self.current_physical_defense: int = self.physical_defense
+        self.current_magic_attack: int = self.magic_attack
+        self.current_magic_defense: int = self.magic_defense
+        self.stat_modifiers = {}
 
     def apply_attribute_points(self, amount: int, target: str):
         if self.attribute_points >= amount:
@@ -250,10 +244,10 @@ class CharacterData:
         {self.gear}
         Abilities: {self.spells}
         Health: {self.current_health}/{self.max_health}
-        Current Physical Attack: {self.current_physical_attack}
-        Current Physical Defense: {self.current_physical_defense}
-        Current Magic Attack: {self.current_magic_attack}
-        Current Magic Defense: {self.current_magic_defense}
+        Physical Attack: {self.physical_attack}
+        Physical Defense: {self.physical_defense}
+        Magic Attack: {self.magic_attack}
+        Magic Defense: {self.magic_defense}
         """
 
 

@@ -10,42 +10,36 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from engine import character
 
-
-# TODO Build out leveling system and stats
-
-# TODO build out stats and requirements provider for procedural loot generator
-
+# TODO build requirements
+# TODO build stats
 
 class GearItemData:
-    name: str = ''
-    element: el.Element = None
-    level: int = 1
-    requirements: dict = {}
-    stats: dict = {}
-
     def __init__(self, element: el.Element = None):
+        self.name: str = ''
+        self.level: int = 1
+        self.experience: int = 0
+        self.requirements: dict = {}
+        self.stats: dict = {}
+        self.rarity: str = ''
         if element is not None:
             self.element = element
         else:
             self.element = el.get_random_element()
-    
+
     def __repr__(self):
         return f"""{self.name}: Level {self.level}
-            Element: {self.element.name.lower().capitalize()}
-            Requirements:
-                {[req for req in self.requirements]}
-            Stats:
-                {[stat + ': ' + str(self.stats[stat]) for stat in self.stats]}
+    Rarity: {self.rarity.capitalize()}
+    Element: {self.element.name.lower().capitalize()}
+    Requirements:
+        {[req + ': ' + str(val) for req, val in self.requirements.items()]}
+    Stats:
+        {[stat + ': ' + str(self.stats[stat]) for stat in self.stats]}
         """
 
 
 class GearItem(ABC):
     def __init__(self, element: el.Element = None):
         self.data = GearItemData(element)
-    
-    @abstractmethod
-    def __provide_stats__(self, user: 'character.Character'):
-        pass
 
     def __repr__(self):
         return str(self.data)
@@ -58,9 +52,6 @@ class Armor(GearItem):
         self.data.name = namer.create_name(namer.ARMOR_FORMATS,
                                            element_word)
 
-    def __provide_stats__(self, user: 'character.Character'):
-        pass
-
 
 class Weapon(GearItem):
     def __init__(self, element: el.Element = None):
@@ -69,9 +60,6 @@ class Weapon(GearItem):
         self.data.name = namer.create_name(namer.WEAPON_FORMATS,
                                            element_word)
 
-    def __provide_stats__(self, user: 'character.Character'):
-        return super().__provide_stats__(user)
-
 
 class SpecialItem(GearItem):
     def __init__(self, element: el.Element = None):
@@ -79,9 +67,6 @@ class SpecialItem(GearItem):
         element_word = el.get_random_element_word(self.data.element)
         self.data.name = namer.create_name(namer.SPECIAL_ITEM_FORMATS,
                                            element_word)
-
-    def __provide_stats__(self, user: 'character.Character'):
-        return super().__provide_stats__(user)
 
 
 class GearSet:
@@ -136,6 +121,3 @@ class GearSet:
             {[item.data for item in self.special]}
         """
 
-
-# Stat providing:
-# Per class generator methods?

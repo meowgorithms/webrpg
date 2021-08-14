@@ -10,8 +10,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from engine import character
 
-# TODO build requirements
-# TODO build stats
 
 class GearItemData:
     def __init__(self, element: el.Element = None):
@@ -26,23 +24,20 @@ class GearItemData:
         else:
             self.element = el.get_random_element()
 
-    def __repr__(self):
-        return f"""{self.name}: Level {self.level}
-    Rarity: {self.rarity.capitalize()}
-    Element: {self.element.name.lower().capitalize()}
-    Requirements:
-        {[req + ': ' + str(val) for req, val in self.requirements.items()]}
-    Stats:
-        {[stat + ': ' + str(self.stats[stat]) for stat in self.stats]}
-        """
-
 
 class GearItem(ABC):
     def __init__(self, element: el.Element = None):
         self.data = GearItemData(element)
 
     def __repr__(self):
-        return str(self.data)
+        return f"""{self.data.name}: Level {self.data.level} {self.__class__.__name__}
+    Rarity: {self.data.rarity.capitalize()}
+    Element: {self.data.element.name.lower().capitalize()}
+    Requirements:
+        {[req + ': ' + str(val) for req, val in self.data.requirements.items()]}
+    Stats:
+        {[stat + ': ' + str(self.data.stats[stat]) for stat in self.data.stats]}
+"""
 
 
 class Armor(GearItem):

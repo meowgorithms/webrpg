@@ -6,15 +6,7 @@ from . import gear as g
 from . import spells as spells
 from . import elements as el
 from . import conlang
-from . import items
 import numpy as np
-
-# TODO Create leveling system
-# con, str, int, elemental affinity
-# needs to be done first,
-# item requirement generation depends on level system
-# item stat generation depends on item requirements
-
 
 BASE_STATS = {
     "health": 100,

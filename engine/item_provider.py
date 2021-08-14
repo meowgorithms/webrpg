@@ -113,11 +113,11 @@ class ItemProvider:
 
     def __give_stats__(self, item: 'GearItem'):
         n_stats_from_rarity = {
-            "common": 0,
-            "uncommon": 1,
-            "rare": 2,
-            "unique": 3,
-            "legendary": 4
+            "common": 1,
+            "uncommon": 2,
+            "rare": 3,
+            "unique": 4,
+            "legendary": 5
         }
         stats = list(self.data.attributes.keys())
         stats.extend([
@@ -133,20 +133,20 @@ class ItemProvider:
             "physical_defense": 5,
             "magic_attack": 5,
             "magic_defense": 5,
-            "strength": 1,
-            "constitution": 1,
-            "intelligence": 1,
-            "light": 1,
-            "dark": 1,
-            "electric": 1,
-            "fire": 1,
-            "water": 1,
-            "earth": 1,
-            "air": 1,
-            "metal": 1,
-            "acid": 1,
-            "psychic": 1,
-            "weird": 1
+            "strength": .33,
+            "constitution": .33,
+            "intelligence": .33,
+            "light": .5,
+            "dark": .5,
+            "electric": .5,
+            "fire": .5,
+            "water": .5,
+            "earth": .5,
+            "air": .5,
+            "metal": .5,
+            "acid": .5,
+            "psychic": .5,
+            "weird": .5
         }
         rarity_multipliers = {
             "common": 1,
@@ -155,9 +155,12 @@ class ItemProvider:
             "unique": 1.4,
             "legendary": 1.8
         }
-        for _ in n_stats_from_rarity:
+        # TODO Guarantee element stat from item
+        rand_upper = max(1, round((item.data.requirements["level"] * random())))
+        for _ in range(n_stats_from_rarity[item.data.rarity]):
             stat = choice(stats)
             val = stat_multipiers[stat] \
                 * rarity_multipliers[item.data.rarity] \
-                * item.data.requirements["level"]
+                * item.data.requirements["level"] \
+                + randint(1, rand_upper)
             item.data.stats[stat] = round(val)

@@ -127,8 +127,17 @@ class ItemProvider:
             "physical_defense",
             "magic_attack",
             "magic_defense",
+            "strength",
+            "constitution",
+            "intelligence"
         ]
-        stats.extend(NONE_stats)
+        stats.extend([
+            "max_health",
+            "physical_attack",
+            "physical_defense",
+            "magic_attack",
+            "magic_defense",
+        ])
         stat_multipiers = {
             "max_health": 10,
             "physical_attack": 5,

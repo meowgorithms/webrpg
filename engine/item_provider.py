@@ -166,8 +166,9 @@ class ItemProvider:
             "unique": 1.4,
             "legendary": 1.8
         }
-        
+
         # TODO Guarantee element stat from item
+        
         for i in range(n_stats_from_rarity[item.data.rarity]):
             rand_upper = max(1, round((item.data.requirements["level"] * random())))
             if i == 0:
@@ -175,11 +176,13 @@ class ItemProvider:
                     stat = item.data.element.name.lower()
                 else:
                     stat = choice(NONE_stats)
+                element_bonus_multiplier = 1.3
             else:
                 stat = choice(stats)
+                element_bonus_multiplier = 1
 
             val = stat_multipiers[stat] \
                 * rarity_multipliers[item.data.rarity] \
                 * item.data.requirements["level"] \
                 + randint(1, rand_upper)
-            item.data.stats[stat] = round(val)
+            item.data.stats[stat] = round(val * element_bonus_multiplier)

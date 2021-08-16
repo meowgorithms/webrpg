@@ -105,6 +105,7 @@ class ItemProvider:
                 req = item.data.element.name
                 val = randint(level_requirement, level_requirement * 2)
                 n_reqs -= 1
+                item.data.requirements[req] = val
 
         for _ in range(n_reqs):
             req = choice(attributes)
@@ -120,13 +121,14 @@ class ItemProvider:
             "legendary": 5
         }
         stats = list(self.data.attributes.keys())
-        stats.extend([
+        NONE_stats = [
             "max_health",
             "physical_attack",
             "physical_defense",
             "magic_attack",
             "magic_defense",
-        ])
+        ]
+        stats.extend(NONE_stats)
         stat_multipiers = {
             "max_health": 10,
             "physical_attack": 5,
@@ -155,10 +157,18 @@ class ItemProvider:
             "unique": 1.4,
             "legendary": 1.8
         }
+        
         # TODO Guarantee element stat from item
-        rand_upper = max(1, round((item.data.requirements["level"] * random())))
-        for _ in range(n_stats_from_rarity[item.data.rarity]):
-            stat = choice(stats)
+        for i in range(n_stats_from_rarity[item.data.rarity]):
+            rand_upper = max(1, round((item.data.requirements["level"] * random())))
+            if i == 0:
+                if item.data.element != item.data.element.NONE:
+                    stat = item.data.element.name.lower()
+                else:
+                    stat = choice(NONE_stats)
+            else:
+                stat = choice(stats)
+
             val = stat_multipiers[stat] \
                 * rarity_multipliers[item.data.rarity] \
                 * item.data.requirements["level"] \

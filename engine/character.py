@@ -40,13 +40,29 @@ class CharacterData:
             self.level += 1
             self.attribute_points += 2
             self.current_health += round(self.max_health * .33)
+    
+    @property
+    def strength(self):
+        return self.attributes['strength'] \
+            + self.stat_modifiers['strength']
+    
+    @property
+    def constitution(self):
+        return self.attributes['constitution'] \
+            + self.stat_modifiers['constitution']
+    
+    @property
+    def intelligence(self):
+        return self.attributes['intelligence'] \
+            + self.stat_modifiers['intelligence']
 
     # -- Max Health ---
     @property
     def max_health(self):
         return self._max_health \
-            + (10 * (self.attributes["constitution"] - 1)) \
-            + 10 * (self.level - 1)
+            + (10 * (self.constitution - 1)) \
+            + 10 * (self.level - 1) \
+            + self.stat_modifiers['max_health']
 
     @max_health.setter
     def max_health(self, value):
@@ -68,15 +84,17 @@ class CharacterData:
     # --- Physical Attack ---
     @property
     def physical_attack(self):
-        return self._physical_attack + \
-            (self.attributes["strength"] - 1) * 5
+        return self._physical_attack \
+            + (self.strength - 1) * 5 \
+            + self.stat_modifiers['physical_attack']
 
     # --- Physical Defense ---
     @property
     def physical_defense(self):
         return self._physical_defense \
-            + (self.attributes["strength"] - 1) * 2 \
-            + (self.attributes["constitution"] - 1) * 3
+            + (self.strength - 1) * 2 \
+            + (self.constitution - 1) * 3 \
+            + self.stat_modifiers['physical_defense']
 
     # --- Magic Attack ---
     @property
@@ -95,9 +113,10 @@ class CharacterData:
             self.weird
             ) / 11)
 
-        return self._magic_attack + \
-            (self.attributes["intelligence"] - 1) * 5 + \
-                from_attributes
+        return self._magic_attack \
+            + (self.intelligence - 1) * 5 \
+            + from_attributes \
+            + self.stat_modifiers['magic_attack']
 
     # --- Magic Defense ---
     @property
@@ -115,54 +134,66 @@ class CharacterData:
             self.psychic + \
             self.weird
             ) / 11)
-        return self._magic_attack + \
-            (self.attributes["intelligence"] - 1) * 5 + \
-                from_attributes
+        return self._magic_defense \
+            + (self.intelligence - 1) * 5 \
+            + from_attributes \
+            + self.stat_modifiers['magic_defense']
 
     # --- Elemental ---
     @property
     def light(self) -> int:
-        return (self.attributes["light"] - 1) * 10 + 1
+        return (self.attributes["light"] - 1) * 10 + 1 \
+            + self.stat_modifiers['light']
 
     @property
     def dark(self) -> int:
-        return (self.attributes["dark"] - 1) * 10 + 1
+        return (self.attributes["dark"] - 1) * 10 + 1 \
+            + self.stat_modifiers['dark']
 
     @property
     def electric(self) -> int:
-        return (self.attributes["electric"] - 1) * 10 + 1
+        return (self.attributes["electric"] - 1) * 10 + 1 \
+            + self.stat_modifiers['electric']
 
     @property
     def fire(self) -> int:
-        return (self.attributes["fire"] - 1) * 10 + 1
+        return (self.attributes["fire"] - 1) * 10 + 1 \
+            + self.stat_modifiers['fire']
 
     @property
     def water(self) -> int:
-        return (self.attributes["water"] - 1) * 10 + 1
+        return (self.attributes["water"] - 1) * 10 + 1 \
+            + self.stat_modifiers['water']
 
     @property
     def earth(self) -> int:
-        return (self.attributes["earth"] - 1) * 10 + 1
+        return (self.attributes["earth"] - 1) * 10 + 1 \
+            + self.stat_modifiers['earth']
 
     @property
     def air(self) -> int:
-        return (self.attributes["air"] - 1) * 10 + 1
+        return (self.attributes["air"] - 1) * 10 + 1 \
+            + self.stat_modifiers['air']
 
     @property
     def metal(self) -> int:
-        return (self.attributes["metal"] - 1) * 10 + 1
+        return (self.attributes["metal"] - 1) * 10 + 1 \
+            + self.stat_modifiers['metal']
 
     @property
     def acid(self) -> int:
-        return (self.attributes["acid"] - 1) * 10 + 1
+        return (self.attributes["acid"] - 1) * 10 + 1 \
+            + self.stat_modifiers['acid']
 
     @property
     def psychic(self) -> int:
-        return (self.attributes["psychic"] - 1) * 10 + 1
+        return (self.attributes["psychic"] - 1) * 10 + 1 \
+            + self.stat_modifiers['psychic']
 
     @property
     def weird(self) -> int:
-        return (self.attributes["weird"] - 1) * 10 + 1
+        return (self.attributes["weird"] - 1) * 10 + 1 \
+            + self.stat_modifiers['weird']
 
     # An extra bit to track current stats vs max / normal
 
@@ -170,6 +201,27 @@ class CharacterData:
     def __init__(self, first_name: str = "", last_name: str = ""):
         self.first_name = first_name
         self.last_name = last_name
+        self.stat_modifiers = {
+            "max_health": 0,
+            "physical_attack": 0,
+            "physical_defense": 0,
+            "magic_attack": 0,
+            "magic_defense": 0,
+            "strength": 0,
+            "constitution": 0,
+            "intelligence": 0,
+            "light": 0,
+            "dark": 0,
+            "electric": 0,
+            "fire": 0,
+            "water":0,
+            "earth": 0,
+            "air": 0,
+            "metal": 0,
+            "acid": 0,
+            "psychic": 0,
+            "weird": 0
+        }
         self.level = 1
         self.money: float = 0
         self.spells = []
@@ -179,7 +231,6 @@ class CharacterData:
             "strength": 1,
             "constitution": 1,
             "intelligence": 1,
-            # Elemental Affinities
             "light": 1,
             "dark": 1,
             "electric": 1,
@@ -204,7 +255,6 @@ class CharacterData:
         self.current_physical_defense: int = self.physical_defense
         self.current_magic_attack: int = self.magic_attack
         self.current_magic_defense: int = self.magic_defense
-        self.stat_modifiers = {}
 
     def apply_attribute_points(self, amount: int, target: str):
         if self.attribute_points >= amount:
@@ -216,12 +266,13 @@ class CharacterData:
         {(self.first_name.capitalize() 
         + " "
         + self.last_name.capitalize()).strip()}: Level {self.level}
+        Health: {self.current_health}/{self.max_health}
         {self.experience} / {self.required_exp} EXP
         Attribute Points: {self.attribute_points}
 
-        Strength: {self.attributes["strength"]}
-        Intelligence: {self.attributes["intelligence"]}
-        Constitution: {self.attributes["constitution"]}
+        Strength: {self.attributes["strength"]} -> {self.strength}
+        Intelligence: {self.attributes["intelligence"]} -> {self.intelligence}
+        Constitution: {self.attributes["constitution"]} -> {self.constitution}
         Light: {self.attributes["light"]} -> {self.light}
         Dark: {self.attributes["dark"]} -> {self.dark}
         Electric: {self.attributes["electric"]} -> {self.electric}
@@ -233,13 +284,12 @@ class CharacterData:
         Acid: {self.attributes["acid"]} -> {self.acid}
         Psychic: {self.attributes["psychic"]} -> {self.psychic}
         Weird: {self.attributes["weird"]} -> {self.weird}
-        {self.gear}
-        Abilities: {self.spells}
-        Health: {self.current_health}/{self.max_health}
         Physical Attack: {self.physical_attack}
         Physical Defense: {self.physical_defense}
         Magic Attack: {self.magic_attack}
         Magic Defense: {self.magic_defense}
+        Abilities: {self.spells}
+        {self.gear}
         """
 
 
@@ -257,7 +307,36 @@ class Character:
 
     # data utils
     def equip(self, item: g.GearItem):
-        self.data.gear.equip(item)
+        # Put item in gear container
+        equipped = self.data.gear.equip(item)
+        # add stats to modifier list -> properties pull from this list
+        if not equipped:
+            for stat in item.data.stats:
+                # mostly just redundancy, might be able to be used for special
+                # modifiers later?
+                if stat in self.data.stat_modifiers:
+                    self.data.stat_modifiers[stat] += item.data.stats[stat]
+                else:
+                    self.data.stat_modifiers[stat] = item.data.stats[stat]
+                # Update current health
+                if stat == 'max_health':
+                    self.data.current_health += item.data.stats[stat]
+
+    
+    def dequip(self, item: g.GearItem):
+        item_type = item.__class__.__name__
+        # Remove item from gear slot
+        if item_type == 'Weapon':
+            self.data.gear.weapons.remove(item)
+        elif item_type == 'Armor':
+            self.data.gear.armor.remove(item)
+        elif item_type == 'SpecialItem':
+            self.data.gear.special.remove(item)
+        # remove stats from stat mod list, therefore the character
+        for stat in item.data.stats:
+            # It should be there but uh, you know
+            if stat in self.data.stat_modifiers:
+                self.data.stat_modifiers[stat] -= item.data.stats[stat]
 
     def give_exp(self, amount: int):
         self.data.experience += amount

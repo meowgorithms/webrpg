@@ -30,7 +30,8 @@ class GearItem(ABC):
         self.data = GearItemData(element)
 
     def __repr__(self):
-        return f"""{self.data.name}: Level {self.data.level} {self.__class__.__name__}
+        return f"""
+    {self.data.name}: Level {self.data.level} {self.__class__.__name__}
     Rarity: {self.data.rarity.capitalize()}
     Element: {self.data.element.name.lower().capitalize()}
     Requirements:
@@ -47,6 +48,9 @@ class Armor(GearItem):
         self.data.name = namer.create_name(namer.ARMOR_FORMATS,
                                            element_word)
 
+    def __repr__(self):
+        return super().__repr__()
+
 
 class Weapon(GearItem):
     def __init__(self, element: el.Element = None):
@@ -54,6 +58,9 @@ class Weapon(GearItem):
         element_word = el.get_random_element_word(self.data.element)
         self.data.name = namer.create_name(namer.WEAPON_FORMATS,
                                            element_word)
+    
+    def __repr__(self):
+        return super().__repr__()
 
 
 class SpecialItem(GearItem):
@@ -62,6 +69,9 @@ class SpecialItem(GearItem):
         element_word = el.get_random_element_word(self.data.element)
         self.data.name = namer.create_name(namer.SPECIAL_ITEM_FORMATS,
                                            element_word)
+
+    def __repr__(self):
+        return super().__repr__()
 
 
 class GearSet:
@@ -78,41 +88,50 @@ class GearSet:
         self.weapon_max = 2
 
     def equip(self, item: GearItem):
-        if type(item) is Armor:
-            self.__equip_armor__(item)
-        elif type(item) is Weapon:
-            self.__equip_weapon__(item)
-        elif type(item) is SpecialItem:
-            self.__equip_special_item__(item)
+        if item in self.armor \
+        or item in self.weapons \
+        or item in self.special:
+            print(f"{item.data.name} is already equipped")
+            # equipped is true
+            return True
+        else:
+            if type(item) is Armor:
+                self.__equip_armor__(item)
+            elif type(item) is Weapon:
+                self.__equip_weapon__(item)
+            elif type(item) is SpecialItem:
+                self.__equip_special_item__(item)
+            #equipped is false
+            return False
 
     def __equip_special_item__(self, special_item: SpecialItem):
         if len(self.special) >= self.special_max_size:
-            return "Special Item slots full"
+            print("Special Item slots full")
         else:
             self.special.append(special_item)
+            print(f"Equipped {special_item.data.name}")
 
     def __equip_weapon__(self, weapon: Weapon):
         if len(self.weapons) >= self.weapon_max:
             print("Oh noes! You've got your hands full!! D:")
-            return "Weapon slots full"
         else:
             self.weapons.append(weapon)
-            return f"Equipped {weapon.data.name}"    
+            print(f"Equipped {weapon.data.name}")
 
     def __equip_armor__(self, armor_item: Armor):
         if len(self.armor) >= self.armor_max_size:
-            return "Armor slots full"
+            print("Armor slots full")
         else:
             self.armor.append(armor_item)
-            return f"Equipped {armor_item.data.name}"
+            print(f"Equipped {armor_item.data.name}")
 
     def __repr__(self):
         return f"""
         Armor:
-            {[item.data for item in self.armor]}
+            {[item for item in self.armor]}
         Weapons:
-            {[item.data for item in self.weapons]}
+            {[item for item in self.weapons]}
         Special:
-            {[item.data for item in self.special]}
+            {[item for item in self.special]}
         """
 

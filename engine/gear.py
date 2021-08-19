@@ -26,6 +26,7 @@ class GearItemData:
 
 
 class GearItem(ABC):
+    item_type: str
     def __init__(self, element: el.Element = None):
         self.data = GearItemData(element)
 
@@ -42,6 +43,7 @@ class GearItem(ABC):
 
 
 class Armor(GearItem):
+    item_type = 'armor'
     def __init__(self, element: el.Element = None):
         super().__init__(element=element)
         element_word = el.get_random_element_word(self.data.element)
@@ -53,6 +55,7 @@ class Armor(GearItem):
 
 
 class Weapon(GearItem):
+    item_type = 'weapon'
     def __init__(self, element: el.Element = None):
         super().__init__(element=element)
         element_word = el.get_random_element_word(self.data.element)
@@ -64,6 +67,7 @@ class Weapon(GearItem):
 
 
 class SpecialItem(GearItem):
+    item_type = 'special'
     def __init__(self, element: el.Element = None):
         super().__init__(element=element)
         element_word = el.get_random_element_word(self.data.element)
@@ -73,65 +77,50 @@ class SpecialItem(GearItem):
     def __repr__(self):
         return super().__repr__()
 
-
+# This is really, really dumb
+# TODO Refactor this garbage
 class GearSet:
     """
     Container for equippables
     """
 
     def __init__(self):
-        self.armor: 'list[Armor]' = []
-        self.weapons: 'list[Weapon]' = []
-        self.special: 'list[SpecialItem]' = []
-        self.special_max_size = 5
-        self.armor_max_size = 5
-        self.weapon_max = 2
+        self.items = {
+            'armor': [],
+            'weapon': [],
+            'special': []
+        }
+        self._register = []
+        self.max = {
+            'armor': 5,
+            'weapon': 2,
+            'special': 3
+        }
 
     def equip(self, item: GearItem):
-        if item in self.armor \
-        or item in self.weapons \
-        or item in self.special:
+        if len(self.items[item.item_type]) >= self.max[item.item_type]:
+            print(f"Max amount of {item.item_type}, please dequip one and try again")
+            return True
+        if item in self._register:
             print(f"{item.data.name} is already equipped")
             # equipped is true
             return True
         else:
-            if type(item) is Armor:
-                self.__equip_armor__(item)
-            elif type(item) is Weapon:
-                self.__equip_weapon__(item)
-            elif type(item) is SpecialItem:
-                self.__equip_special_item__(item)
+            self._register.append(item)
+            self.items[item.item_type].append(item)
             #equipped is false
             return False
 
-    def __equip_special_item__(self, special_item: SpecialItem):
-        if len(self.special) >= self.special_max_size:
-            print("Special Item slots full")
+    def dequip(self, item: GearItem):
+        if not self._register:
+            print("No items equipped")
+        elif item in self._register:
+            self._register.remove(item)
+            self.items[item.item_type].remove(item)
         else:
-            self.special.append(special_item)
-            print(f"Equipped {special_item.data.name}")
-
-    def __equip_weapon__(self, weapon: Weapon):
-        if len(self.weapons) >= self.weapon_max:
-            print("Oh noes! You've got your hands full!! D:")
-        else:
-            self.weapons.append(weapon)
-            print(f"Equipped {weapon.data.name}")
-
-    def __equip_armor__(self, armor_item: Armor):
-        if len(self.armor) >= self.armor_max_size:
-            print("Armor slots full")
-        else:
-            self.armor.append(armor_item)
-            print(f"Equipped {armor_item.data.name}")
+            print(f'{item.data.name} not equipped?')
 
     def __repr__(self):
         return f"""
-        Armor:
-            {[item for item in self.armor]}
-        Weapons:
-            {[item for item in self.weapons]}
-        Special:
-            {[item for item in self.special]}
+        {self.items}
         """
-

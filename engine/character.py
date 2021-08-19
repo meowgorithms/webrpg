@@ -1,7 +1,6 @@
 """
 Provides character archetypes (aka classes)
 """
-from dataclasses import dataclass
 from . import gear as g
 from . import spells as spells
 from . import elements as el
@@ -40,17 +39,17 @@ class CharacterData:
             self.level += 1
             self.attribute_points += 2
             self.current_health += round(self.max_health * .33)
-    
+
     @property
     def strength(self):
         return self.attributes['strength'] \
             + self.stat_modifiers['strength']
-    
+
     @property
     def constitution(self):
         return self.attributes['constitution'] \
             + self.stat_modifiers['constitution']
-    
+
     @property
     def intelligence(self):
         return self.attributes['intelligence'] \
@@ -197,7 +196,6 @@ class CharacterData:
 
     # An extra bit to track current stats vs max / normal
 
-
     def __init__(self, first_name: str = "", last_name: str = ""):
         self.first_name = first_name
         self.last_name = last_name
@@ -306,7 +304,19 @@ class Character:
             self.data.last_name = conlang.create_conlang_word(length=8)
 
     # data utils
+    def get_gear(self):
+        return self.data.gear._register
+            
     def equip(self, item: g.GearItem):
+        # Check requirements
+        for req in item.data.requirements:
+            if getattr(self.data, req.lower()) < item.data.requirements[req]:
+                print(f'{req.capitalize()} insufficient')
+                return
+        
+        # Get health prior to items
+        cur_hp = self.data.current_health
+        max_hp = self.data.max_health
         # Put item in gear container
         equipped = self.data.gear.equip(item)
         # add stats to modifier list -> properties pull from this list
@@ -319,24 +329,23 @@ class Character:
                 else:
                     self.data.stat_modifiers[stat] = item.data.stats[stat]
                 # Update current health
-                if stat == 'max_health':
-                    self.data.current_health += item.data.stats[stat]
+        
+            # Health fix
+            if self.data.max_health != max_hp:
+                self.data.current_health += self.data.max_health - cur_hp
 
-    
+
     def dequip(self, item: g.GearItem):
-        item_type = item.__class__.__name__
-        # Remove item from gear slot
-        if item_type == 'Weapon':
-            self.data.gear.weapons.remove(item)
-        elif item_type == 'Armor':
-            self.data.gear.armor.remove(item)
-        elif item_type == 'SpecialItem':
-            self.data.gear.special.remove(item)
-        # remove stats from stat mod list, therefore the character
-        for stat in item.data.stats:
-            # It should be there but uh, you know
-            if stat in self.data.stat_modifiers:
-                self.data.stat_modifiers[stat] -= item.data.stats[stat]
+        if item in self.data.gear._register:
+            self.data.gear.dequip(item)
+            # remove stats from stat mod list, therefore the character
+            for stat in item.data.stats:
+                # It should be there but uh, you know
+                if stat in self.data.stat_modifiers:
+                    self.data.stat_modifiers[stat] -= item.data.stats[stat]
+            # Health fix
+            if self.data.current_health > self.data.max_health:
+                self.data.current_health = self.data.max_health
 
     def give_exp(self, amount: int):
         self.data.experience += amount
